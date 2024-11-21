@@ -1,0 +1,60 @@
+/*!*****************************************************
+
+Freak Flags, Copyright ©2024 Michael P. Cohen. Freak flags is licenced under the MIT licence.
+
+For complete information visit: www.freakflagsprite.com
+
+******************************************************/
+
+.fflag {
+    background-image:url(flagSprite42.png);
+    background-repeat:no-repeat;
+    background-size: 100% 49494%;
+    display: inline-block;
+    overflow: hidden;
+    position: relative;
+    vertical-align: middle;
+    box-sizing: content-box;
+}
+.fflag-US {background-position:center 0.2287%}
+.fflag-ID {background-position:center 0.4524%}
+.fflag-JP {background-position:center 0.6721%}
+.fflag-TW {background-position:left 0.8958%}
+.fflag-TH {background-position:center 1.1162%}
+
+.fflag.ff-sm {width: 18px;height: 11px}
+.fflag.ff-md {width: 27px;height: 17px}
+.fflag.ff-lg {width: 42px;height: 27px}
+.fflag.ff-xl {width: 60px;height: 37px}
+
+/* ff-round = circular icons */
+.ff-round {
+	background-size: 160%;
+	background-clip: content-box;
+	border-radius: 50%;
+}
+.ff-round.ff-sm {width: 12px; height: 12px}
+.ff-round.ff-md {width: 18px; height: 18px}
+.ff-round.ff-lg {width: 24px; height: 24px}
+.ff-round.ff-xl {width: 32px; height: 32px}
+
+/* ff-app = app icon look */
+.ff-app {
+	background-size: 155%;
+	background-clip: content-box;
+	border-radius: 21%;
+}
+.ff-app:before {
+	content: '';
+	display: inline-block;
+	width: inherit;
+	height: inherit;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: radial-gradient(circle at center -166%, rgba(255,255,255,.0) 0%, rgba(255,255,255,.0) 66%, rgba(255,255,255,.5) 80%, rgba(255,255,255,0) 80.5%, rgba(0,0,0,.02) 81%, rgba(0,0,0,.2) 100%);
+}
+.ff-app.ff-sm:before, .ff-app.ff-sm {width: 12px; height: 12px}
+.ff-app.ff-md:before, .ff-app.ff-md {width: 18px; height: 18px}
+.ff-app.ff-lg:before, .ff-app.ff-lg {width: 24px; height: 24px}
+.ff-app.ff-xl:before, .ff-app.ff-xl {width: 32px; height: 32px}
