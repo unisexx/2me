@@ -70,13 +70,21 @@ export default {
     },
     computed: {
         headerTitle() {
-            if (this.category === "official") {
-                return "อิโมจิไลน์ทางการ";
-            } else if (this.category === "creator") {
-                return "อิโมจิไลน์ครีเอเตอร์";
+            const category = this.category;
+            const country = this.$route.query.country || ""; // ดึง country จาก query parameter
+            const countryLabel = this.countries[country] || ""; // ดึงชื่อประเทศจาก countries
+
+            let baseTitle = "";
+            if (category === "official") {
+                baseTitle = "สติกเกอร์ไลน์ทางการ";
+            } else if (category === "creator") {
+                baseTitle = "สติกเกอร์ไลน์ครีเอเตอร์";
             } else {
-                return "อิโมจิไลน์ทั้งหมด";
+                baseTitle = "สติกเกอร์ทั้งหมด";
             }
+
+            // เพิ่มชื่อประเทศต่อท้าย หาก countryLabel ไม่ว่าง
+            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
         },
         // ฟิลเตอร์ประเทศตาม category
         filteredCountries() {

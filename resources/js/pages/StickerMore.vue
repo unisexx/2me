@@ -70,17 +70,24 @@ export default {
     },
     computed: {
         headerTitle() {
-            if (this.category === "official") {
-                return "สติกเกอร์ไลน์ทางการ";
-            } else if (this.category === "creator") {
-                return "สติกเกอร์ไลน์ครีเอเตอร์";
+            const category = this.category;
+            const country = this.$route.query.country || ""; // ดึง country จาก query parameter
+            const countryLabel = this.countries[country] || ""; // ดึงชื่อประเทศจาก countries
+
+            let baseTitle = "";
+            if (category === "official") {
+                baseTitle = "สติกเกอร์ไลน์ทางการ";
+            } else if (category === "creator") {
+                baseTitle = "สติกเกอร์ไลน์ครีเอเตอร์";
             } else {
-                return "สติกเกอร์ทั้งหมด";
+                baseTitle = "สติกเกอร์ทั้งหมด";
             }
+
+            // เพิ่มชื่อประเทศต่อท้าย หาก countryLabel ไม่ว่าง
+            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
         },
         // ฟิลเตอร์ประเทศตาม category
         filteredCountries() {
-            // หาก category = creator ให้แสดงเฉพาะประเทศที่ระบุ
             if (this.category === "creator") {
                 return {
                     "": "ทั้งหมด",
@@ -89,7 +96,6 @@ export default {
                     tw: "ไต้หวัน",
                 };
             }
-            // สำหรับ category อื่น ให้แสดงทั้งหมด
             return this.countries;
         },
     },
@@ -98,9 +104,9 @@ export default {
         "$route.query": {
             immediate: true,
             handler(newQuery) {
-                const page = newQuery.page || 1; // Default page
-                const country = newQuery.country || ""; // Default country
-                const order = newQuery.order || "new"; // Default order
+                const page = newQuery.page || 1;
+                const country = newQuery.country || "";
+                const order = newQuery.order || "new";
 
                 // อัปเดต category จาก query parameter
                 this.category = newQuery.category || "";
@@ -113,10 +119,9 @@ export default {
     methods: {
         async fetchStickers(page, category, country, order) {
             try {
-                // สร้าง URL จากพารามิเตอร์
                 const url = `/api/sticker-more?page=${page}&category=${category}&country=${country}&order=${order}`;
                 const response = await axios.get(url);
-                this.stickers = response.data; // ดึงข้อมูล Pagination จาก API
+                this.stickers = response.data;
 
                 // เลื่อนหน้าจอไปด้านบนสุดหลังจากโหลดเสร็จ
                 window.scrollTo({
@@ -127,20 +132,21 @@ export default {
             }
         },
         changePage(page) {
-            // อัปเดต query parameter ของ URL
             this.$router.push({
                 query: {
-                    ...this.$route.query, // รักษาค่า query อื่นไว้
+                    ...this.$route.query,
                     page, // อัปเดต page
                 },
             });
+
+            // Debugging page change
+            console.log("Changing page to:", page);
         },
         changeCountry(country) {
-            // อัปเดต query parameter ของ URL
             this.$router.push({
                 query: {
-                    ...this.$route.query, // รักษาค่า query อื่นไว้
-                    country, // อัปเดต country
+                    ...this.$route.query,
+                    country,
                     page: 1, // รีเซ็ตไปหน้าแรก
                 },
             });
