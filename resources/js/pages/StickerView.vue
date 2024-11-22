@@ -10,7 +10,7 @@
                 <!-- เนื้อหาหลัก -->
                 <div class="flex flex-wrap">
                     <!-- ซ้าย: ข้อมูลสติกเกอร์ -->
-                    <div class="w-full lg:w-8/12 mx-auto pe-5">
+                    <div class="w-full lg:w-9/12 xl:w-8/12 mx-auto">
                         <!-- Breadcrumb -->
                         <nav
                             v-if="!loading && sticker"
@@ -75,7 +75,7 @@
                                 <img
                                     :src="sticker.img_url"
                                     :alt="sticker.title"
-                                    class="w-32 sm:w-48 lg:w-60 h-auto autoLoopSticker"
+                                    class="w-32 sm:w-48 lg:w-56 xl:w-64 h-auto autoLoopSticker"
                                     :data-animation="sticker.img_url"
                                 />
                                 <!-- เงื่อนไขแสดงเสียง -->
@@ -97,18 +97,58 @@
                                         type="audio/mpeg"
                                     />
                                 </audio>
+
+                                <span
+                                    v-if="sticker.is_new"
+                                    class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1 rounded custom-font-size"
+                                >
+                                    NEW
+                                </span>
                             </div>
 
                             <!-- ข้อมูลข้อความ -->
                             <div class="flex-1">
                                 <h1
-                                    class="text-xl sm:text-2xl lg:text-3xl font-bold mb-4"
+                                    class="text-xl sm:text-2xl lg:text-3xl font-bold mb-4 flex flex-wrap items-center gap-2"
                                 >
                                     {{ sticker.title_th }}
+                                    <span
+                                        v-if="
+                                            getStickerResourceTypeText(
+                                                sticker.stickerresourcetype
+                                            )
+                                        "
+                                        class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded border border-blue-400 flex-shrink-0"
+                                    >
+                                        {{
+                                            getStickerResourceTypeText(
+                                                sticker.stickerresourcetype
+                                            )
+                                        }}
+                                    </span>
                                 </h1>
+
+                                <p class="hidden md:block text-gray-600 mb-2">
+                                    {{ sticker.detail }}
+                                </p>
                                 <p class="mb-2">
                                     <span class="font-bold">รหัสสินค้า:</span>
                                     {{ sticker.sticker_code }}
+                                </p>
+                                <p
+                                    class="mb-2"
+                                    v-if="
+                                        getStickerResourceTypeText(
+                                            sticker.stickerresourcetype
+                                        )
+                                    "
+                                >
+                                    ประเภท:
+                                    {{
+                                        getStickerResourceTypeText(
+                                            sticker.stickerresourcetype
+                                        )
+                                    }}
                                 </p>
                                 <p class="mb-2">
                                     <span class="font-bold">ประเทศ:</span>
@@ -125,9 +165,6 @@
                                         sticker.price
                                     }}</span>
                                     <span>THB</span>
-                                </p>
-                                <p class="text-gray-600 mb-2">
-                                    {{ sticker.description }}
                                 </p>
                                 <a
                                     :href="`https://line.me/ti/p/~ratasak1234`"
@@ -151,12 +188,39 @@
                         <hr class="my-4 border-t border-gray-300" />
 
                         <!-- ตัวอย่างสติกเกอร์ในชุด -->
-                        <div class="mt-8">
+                        <div class="mt-2">
                             <h2 class="text-2xl font-semibold mb-4">
-                                ตัวอย่างสติกเกอร์ในชุด
+                                <span
+                                    v-if="
+                                        getStickerResourceTypeTextDetail(
+                                            sticker.stickerresourcetype
+                                        )
+                                    "
+                                    >{{
+                                        getStickerResourceTypeTextDetail(
+                                            sticker.stickerresourcetype
+                                        )
+                                    }}</span
+                                >
                             </h2>
+
+                            <!-- รูป Preview (อยู่นอกลูป) -->
                             <div
-                                class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-4"
+                                v-if="
+                                    !sticker.stamp || sticker.stamp.length === 0
+                                "
+                                class="flex justify-center items-center mb-4"
+                            >
+                                <img
+                                    :src="`https://sdl-stickershop.line.naver.jp/products/0/0/${sticker.version}/${sticker.sticker_code}/LINEStorePC/preview.png`"
+                                    :alt="`สติ๊กเกอร์ไลน์ ${sticker.title_th}`"
+                                    class="w-auto object-contain"
+                                />
+                            </div>
+
+                            <div
+                                v-else
+                                class="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-1 md:gap-2 xl:gap-4"
                             >
                                 <div
                                     v-for="stamp in sticker.stamp"
@@ -196,7 +260,9 @@
                     </div>
 
                     <!-- ขวา: สามารถใส่ข้อมูลเพิ่มเติมได้ -->
-                    <div class="w-full lg:w-4/12 border-l border-gray-200">
+                    <div
+                        class="w-full lg:w-3/12 xl:w-4/12 border-l border-gray-200"
+                    >
                         <!-- เนื้อหาคอลัมน์ขวา -->
                     </div>
                 </div>
@@ -255,6 +321,30 @@ export default {
                 id: "ประเทศอินโดนีเซีย",
             };
             return countryMap[this.sticker.country] || "ประเทศไม่ทราบ";
+        },
+        getStickerResourceTypeText(type) {
+            const resourceTypeMap = {
+                ANIMATION: "สติกเกอร์เคลื่อนไหว",
+                ANIMATION_SOUND: "สติกเกอร์เคลื่อนไหว+มีเสียง",
+                SOUND: "สติกเกอร์มีเสียง",
+                POPUP: "สติกเกอร์ป๊อปอัพ",
+                POPUP_SOUND: "สติกเกอร์ป๊อปอัพ + มีเสียง",
+                NAME_TEXT: "สติกเกอร์เติมคำ",
+                PER_STICKER_TEXT: "สติกเกอร์ข้อความ",
+            };
+
+            return resourceTypeMap[type] || ""; // คืนค่าเป็น "" หากไม่มีใน map
+        },
+        getStickerResourceTypeTextDetail(type) {
+            const resourceTypeMap = {
+                ANIMATION: "คลิกสติกเกอร์เพื่อดูรายละเอียด",
+                ANIMATION_SOUND: "คลิกสติกเกอร์เพื่อฟังเสียง",
+                SOUND: "คลิกสติกเกอร์เพื่อฟังเสียง",
+                POPUP: "คลิกสติกเกอร์เพื่อดูรายละเอียด",
+                POPUP_SOUND: "คลิกสติกเกอร์เพื่อฟังเสียง",
+            };
+
+            return resourceTypeMap[type] || "ตัวอย่างสติกเกอร์ในชุด"; // คืนค่าเป็น "" หากไม่มีใน map
         },
         getCountryLink() {
             if (!this.sticker) return "#";

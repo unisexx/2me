@@ -95,12 +95,16 @@ class ThemeController extends Controller
             return response()->json(['message' => 'Theme not found'], 404);
         }
 
+        $createdAt = Carbon::parse($theme->created_at);
+        $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
         // แปลง $theme เป็น array และเพิ่มข้อมูลเพิ่มเติม
         $themeData = array_merge(
             $theme->toArray(),
             [
                 'img_url' => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
                 'price'   => convertLineCoin2Money($theme->price),
+                'is_new'  => $isNew,
             ]
         );
 

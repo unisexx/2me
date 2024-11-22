@@ -11,56 +11,89 @@
 
         <!-- Main Layout -->
         <div class="flex flex-1 mt-[4rem] relative">
-            <!-- Floating Button -->
-            <button
-                class="fixed top-3 right-4 bg-blue-700 text-white p-2 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none z-50"
-                @click="toggleAside"
-            >
-                <span v-if="isCollapsed">เปิดเมนู</span>
-                <span v-else>ปิดเมนู</span>
-            </button>
+            <!-- Mobile Layout -->
+            <div class="lg:hidden">
+                <!-- Floating Button -->
+                <button
+                    class="fixed top-3 right-4 bg-blue-700 text-white p-2 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none z-50"
+                    @click="toggleAside"
+                >
+                    <span v-if="isCollapsed">เปิดเมนู</span>
+                    <span v-else>ปิดเมนู</span>
+                </button>
 
-            <!-- Aside Menu -->
-            <aside
-                :class="{
-                    '-translate-x-full': isCollapsed,
-                    'translate-x-0': !isCollapsed,
-                }"
-                class="border-r h-screen fixed top-[4rem] transition-transform duration-300 w-64 z-40"
-            >
-                <!-- เมนูรายการ -->
-                <ul class="p-4">
-                    <li v-for="menu in menus" :key="menu.to">
-                        <router-link
-                            v-if="menu.to"
-                            :to="menu.to"
-                            class="hover:bg-gray-500 hover:bg-opacity-10 hover:text-blue-600 flex items-center text-gray-700 py-1.5 px-4 rounded space-x-2 cursor-pointer"
-                        >
-                            <span v-if="menu.icon" class="material-icons">{{
-                                menu.icon
-                            }}</span>
-                            <span class="ml-2">
-                                <template v-if="menu.label === 'หน้าแรก'">
-                                    {{ menu.label }}
-                                </template>
-                                <template v-else> - {{ menu.label }} </template>
-                            </span>
-                        </router-link>
-                        <hr v-else-if="menu.separator" />
-                    </li>
-                </ul>
-            </aside>
+                <!-- Aside Menu -->
+                <aside
+                    :class="{
+                        '-translate-x-full': isCollapsed,
+                        'translate-x-0': !isCollapsed,
+                    }"
+                    class="border-r h-screen fixed top-[4rem] transition-transform duration-300 w-64 z-40 bg-white"
+                >
+                    <!-- เมนูรายการ -->
+                    <ul class="p-4">
+                        <li v-for="menu in menus" :key="menu.to">
+                            <router-link
+                                v-if="menu.to"
+                                :to="menu.to"
+                                class="hover:bg-gray-500 hover:bg-opacity-10 hover:text-blue-600 flex items-center text-gray-700 py-1.5 px-4 rounded space-x-2 cursor-pointer"
+                            >
+                                <span v-if="menu.icon" class="material-icons">{{
+                                    menu.icon
+                                }}</span>
+                                <span class="ml-2">
+                                    <template v-if="menu.label === 'หน้าแรก'">
+                                        {{ menu.label }}
+                                    </template>
+                                    <template v-else>
+                                        - {{ menu.label }}
+                                    </template>
+                                </span>
+                            </router-link>
+                            <hr v-else-if="menu.separator" />
+                        </li>
+                    </ul>
+                </aside>
+                <!-- Main Content -->
+                <main class="flex-1 p-3 transition-all duration-300">
+                    <slot />
+                </main>
+            </div>
 
-            <!-- Main Content -->
-            <main
-                :class="{
-                    'ml-64': !isCollapsed,
-                    'ml-0': isCollapsed,
-                }"
-                class="flex-1 p-6 transition-all duration-300"
-            >
-                <slot />
-            </main>
+            <!-- Desktop Layout -->
+            <div class="hidden lg:flex">
+                <!-- Aside Menu -->
+                <aside
+                    class="border-r h-screen w-64 bg-white fixed top-[4rem] left-0 z-40"
+                >
+                    <ul class="p-4">
+                        <li v-for="menu in menus" :key="menu.to">
+                            <router-link
+                                v-if="menu.to"
+                                :to="menu.to"
+                                class="hover:bg-gray-500 hover:bg-opacity-10 hover:text-blue-600 flex items-center text-gray-700 py-1.5 px-4 rounded space-x-2 cursor-pointer"
+                            >
+                                <span v-if="menu.icon" class="material-icons">
+                                    {{ menu.icon }}
+                                </span>
+                                <span class="ml-2">
+                                    <template v-if="menu.label === 'หน้าแรก'">
+                                        {{ menu.label }}
+                                    </template>
+                                    <template v-else>
+                                        - {{ menu.label }}
+                                    </template>
+                                </span>
+                            </router-link>
+                            <hr v-else-if="menu.separator" />
+                        </li>
+                    </ul>
+                </aside>
+                <!-- Main Content -->
+                <main class="flex-1 p-3 ml-64">
+                    <slot />
+                </main>
+            </div>
         </div>
 
         <!-- Footer -->
@@ -84,42 +117,36 @@ export default {
                 {
                     to: "/stickers?category=official",
                     label: "สติกเกอร์ไลน์ทางการ",
-                    // icon: "collections",
                 },
                 {
                     to: "/stickers?category=creator",
                     label: "สติกเกอร์ไลน์ครีเอเตอร์",
-                    // icon: "collections",
                 },
                 { separator: true },
                 {
                     to: "/themes?category=official",
                     label: "ธีมไลน์ทางการ",
-                    // icon: "brush",
                 },
                 {
                     to: "/themes?category=creator",
                     label: "ธีมไลน์ครีเอเตอร์",
-                    // icon: "brush",
                 },
                 { separator: true },
                 {
                     to: "/emojis?category=official",
                     label: "อิโมจิไลน์ทางการ",
-                    // icon: "insert_emoticon",
                 },
                 {
                     to: "/emojis?category=creator",
                     label: "อิโมจิไลน์ครีเอเตอร์",
-                    // icon: "insert_emoticon",
                 },
                 { separator: true },
                 {
                     to: "/series",
                     label: "แนะนำจากทางร้าน",
-                    // icon: "star",
                 },
             ],
+            screenIsLarge: window.innerWidth >= 1024,
         };
     },
     mounted() {
@@ -135,8 +162,8 @@ export default {
         },
         setDefaultAsideState() {
             const screenWidth = window.innerWidth;
-            // ปรับสถานะตามขนาดหน้าจอ
             this.isCollapsed = screenWidth < 1280;
+            this.screenIsLarge = screenWidth >= 1024;
         },
     },
 };

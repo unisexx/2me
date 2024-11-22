@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../pages/Home.vue";
-import About from "../pages/About.vue";
 import StickerView from "../pages/StickerView.vue";
 import StickerMore from "../pages/StickerMore.vue";
 import ThemeMore from "../pages/ThemeMore.vue";
@@ -10,7 +9,6 @@ import EmojiView from "../pages/EmojiView.vue";
 
 const routes = [
     { path: "/", name: "Home", component: Home },
-    { path: "/about", name: "About", component: About },
     { path: "/sticker/:id", name: "StickerView", component: StickerView },
     { path: "/stickers", name: "Stickers", component: StickerMore },
     { path: "/themes", name: "Themes", component: ThemeMore },

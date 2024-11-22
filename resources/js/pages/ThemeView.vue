@@ -7,7 +7,7 @@
 
             <div v-else class="flex flex-wrap">
                 <!-- Left Column -->
-                <div class="w-full lg:w-8/12 mx-auto pe-5">
+                <div class="w-full lg:w-9/12 xl:w-8/12 mx-auto">
                     <!-- Breadcrumb -->
                     <nav
                         v-if="!loading && theme"
@@ -71,8 +71,14 @@
                             <img
                                 :src="theme.img_url"
                                 :alt="theme.title"
-                                class="w-32 sm:w-48 lg:w-60 h-auto"
+                                class="w-32 sm:w-48 lg:w-56 xl:w-64 h-auto"
                             />
+                            <span
+                                v-if="theme.is_new"
+                                class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1 rounded custom-font-size"
+                            >
+                                NEW
+                            </span>
                         </div>
 
                         <!-- Right Content Column -->
@@ -80,11 +86,9 @@
                             <h1 class="text-3xl font-bold mb-4">
                                 {{ theme.title }}
                             </h1>
-                            <div class="block mb-2">
-                                <p class="text-gray-700">
-                                    {{ theme.detail }}
-                                </p>
-                            </div>
+                            <p class="hidden md:block text-gray-600 mb-2">
+                                {{ theme.detail }}
+                            </p>
                             <p class="mb-2">
                                 <span class="font-bold">รหัสสินค้า:</span>
                                 {{ theme.id }}
@@ -110,11 +114,20 @@
                             <a
                                 :href="`https://line.me/ti/p/~ratasak1234`"
                                 target="_blank"
-                                class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full"
+                                class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full hidden md:block"
                             >
                                 สั่งซื้อชุดนี้แอดไลน์ไอดี ratasak1234
                             </a>
                         </div>
+                    </div>
+                    <div class="mt-2">
+                        <a
+                            :href="`https://line.me/ti/p/~ratasak1234`"
+                            target="_blank"
+                            class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full block md:hidden"
+                        >
+                            สั่งซื้อชุดนี้แอดไลน์ไอดี ratasak1234
+                        </a>
                     </div>
 
                     <hr class="my-4 border-t border-gray-300" />
@@ -156,8 +169,10 @@
                     </div>
                 </div>
                 <!-- Right Column -->
-                <div class="w-full lg:w-4/12 border-l border-gray-200">
-                    <!-- เนื้อหาสำหรับคอลัมน์ขวา -->
+                <div
+                    class="w-full lg:w-3/12 xl:w-4/12 border-l border-gray-200"
+                >
+                    <!-- เนื้อหาคอลัมน์ขวา -->
                 </div>
             </div>
         </div>

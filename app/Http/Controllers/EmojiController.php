@@ -91,11 +91,15 @@ class EmojiController extends Controller
             return response()->json(['message' => 'Emoji not found'], 404);
         }
 
+        $createdAt = Carbon::parse($emoji->created_at);
+        $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
         // แปลง $emoji เป็น array และเพิ่มข้อมูลเพิ่มเติม
         $emojiData = array_merge(
             $emoji->toArray(),
             [
-                'price' => convertLineCoin2Money($emoji->price),
+                'price'  => convertLineCoin2Money($emoji->price),
+                'is_new' => $isNew,
             ]
         );
 

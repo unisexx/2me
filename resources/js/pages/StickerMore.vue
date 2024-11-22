@@ -4,11 +4,11 @@
             <h2 class="text-xl font-semibold mb-4">{{ headerTitle }}</h2>
 
             <!-- ปุ่มเปลี่ยนประเทศ -->
-            <div class="flex gap-2 mb-4">
+            <div class="flex flex-wrap gap-2 mb-4">
                 <button
                     v-for="(label, country) in filteredCountries"
                     :key="country"
-                    class="px-4 py-2 rounded"
+                    class="px-2 py-1 sm:px-4 sm:py-2 rounded"
                     :class="{
                         'bg-blue-500 text-white':
                             $route.query.country === country,

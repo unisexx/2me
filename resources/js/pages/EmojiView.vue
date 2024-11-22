@@ -7,7 +7,7 @@
 
             <div v-else class="flex flex-wrap">
                 <!-- Left Column -->
-                <div class="w-full lg:w-8/12 mx-auto pe-5">
+                <div class="w-full lg:w-9/12 xl:w-8/12 mx-auto">
                     <!-- Breadcrumb -->
                     <nav
                         v-if="!loading && emoji"
@@ -71,8 +71,14 @@
                             <img
                                 :src="`https://stickershop.line-scdn.net/sticonshop/v1/product/${emoji.emoji_code}/iphone/main.png`"
                                 :alt="emoji.title"
-                                class="w-32 sm:w-48 lg:w-60 h-auto"
+                                class="w-32 sm:w-48 lg:w-56 xl:w-64 h-auto"
                             />
+                            <span
+                                v-if="emoji.is_new"
+                                class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1 rounded custom-font-size"
+                            >
+                                NEW
+                            </span>
                         </div>
 
                         <!-- Right Content Column -->
@@ -80,11 +86,9 @@
                             <h1 class="text-3xl font-bold mb-4">
                                 {{ emoji.title }}
                             </h1>
-                            <div class="block mb-2">
-                                <p class="text-gray-700">
-                                    {{ emoji.detail }}
-                                </p>
-                            </div>
+                            <p class="hidden md:block text-gray-600 mb-2">
+                                {{ emoji.detail }}
+                            </p>
                             <p class="mb-2">
                                 <span class="font-bold">รหัสสินค้า:</span>
                                 {{ emoji.id }}
@@ -107,17 +111,23 @@
                                 }}</span>
                                 <span>THB</span>
                             </p>
-                            <p class="text-gray-600 mb-2">
-                                {{ emoji.detail }}
-                            </p>
                             <a
                                 :href="`https://line.me/ti/p/~ratasak1234`"
                                 target="_blank"
-                                class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full"
+                                class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full hidden md:block"
                             >
                                 สั่งซื้อชุดนี้แอดไลน์ไอดี ratasak1234
                             </a>
                         </div>
+                    </div>
+                    <div class="mt-2">
+                        <a
+                            :href="`https://line.me/ti/p/~ratasak1234`"
+                            target="_blank"
+                            class="inline-block bg-blue-700 text-white text-center px-6 py-3 rounded-full hover:bg-blue-600 w-full block md:hidden"
+                        >
+                            สั่งซื้อชุดนี้แอดไลน์ไอดี ratasak1234
+                        </a>
                     </div>
 
                     <hr class="my-4 border-t border-gray-300" />
@@ -160,7 +170,9 @@
                     </div>
                 </div>
                 <!-- Right Column -->
-                <div class="w-full lg:w-4/12 border-l border-gray-200">
+                <div
+                    class="w-full lg:w-3/12 xl:w-4/12 border-l border-gray-200"
+                >
                     <!-- เนื้อหาสำหรับคอลัมน์ขวา -->
                 </div>
             </div>

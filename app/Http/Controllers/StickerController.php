@@ -98,12 +98,16 @@ class StickerController extends Controller
             return response()->json(['message' => 'Sticker not found'], 404);
         }
 
+        $createdAt = Carbon::parse($sticker->created_at);
+        $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
         // แปลง $sticker เป็น array และเพิ่มข้อมูลเพิ่มเติม
         $stickerData = array_merge(
             $sticker->toArray(),
             [
                 'img_url' => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
                 'price'   => convertLineCoin2Money($sticker->price),
+                'is_new'  => $isNew,
             ]
         );
 

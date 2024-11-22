@@ -1,6 +1,6 @@
 <template>
     <div
-        class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-2 md:gap-4 mt-6"
+        class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2 md:gap-4 mt-6"
     >
         <a
             v-for="theme in themes"
@@ -13,7 +13,7 @@
                 <img :src="theme.img_url" :alt="theme.title" class="w-full" />
                 <span
                     v-if="theme.is_new"
-                    class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded"
+                    class="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-1 rounded custom-font-size"
                 >
                     NEW
                 </span>
@@ -48,5 +48,8 @@ export default {
 </script>
 
 <style scoped>
-/* คุณสามารถเพิ่มสไตล์เฉพาะสำหรับ component นี้ได้ */
+/* ใช้ขนาดที่เล็กสำหรับมือถือ และปรับขนาดสำหรับหน้าจอที่ใหญ่ขึ้น */
+.custom-font-size {
+    font-size: 8px; /* Default สำหรับมือถือ */
+}
 </style>
