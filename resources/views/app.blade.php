@@ -4,9 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>line2me - ขายสติกเกอร์ไลน์ของแท้ ส่งไว ไม่หมดอายุ</title>
+    <meta name="description" content="{{ $metaDescription ?? 'Default description for SEO' }}">
+    <meta name="keywords" content="{{ $metaKeywords ?? 'default, keywords, for, seo' }}">
+    <meta name="author" content="{{ $metaAuthor ?? 'Your Website Author' }}">
+    <title>{{ $title ?? 'Default Title' }}</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
-    @vite(['resources/css/app.css', 'resources/js/app.js']) <!-- เชื่อมต่อ Vite -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
