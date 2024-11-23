@@ -110,4 +110,22 @@ class ThemeController extends Controller
 
         return response()->json($themeData);
     }
+
+    public function getThemeSEO($id)
+    {
+        $theme = Theme::find($id);
+
+        if (!$theme) {
+            return response()->json(['message' => 'Theme not found'], 404);
+        }
+
+        return response()->json([
+            'title'       => $theme->title . ' - Line2Me Theme Shop',
+            'description' => 'ซื้อธีมไลน์ ' . $theme->title . ' ในราคา ' . convertLineCoin2Money($theme->price) . ' บาท พร้อมส่งฟรี',
+            'keywords'    => 'ธีมไลน์, ' . $theme->title . ', theme shop',
+            'image'       => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+            'url'         => url('/theme/' . $theme->id),
+        ]);
+    }
+
 }

@@ -105,4 +105,22 @@ class EmojiController extends Controller
 
         return response()->json($emojiData);
     }
+
+    public function getEmojiSEO($id)
+    {
+        $emoji = Emoji::find($id);
+
+        if (!$emoji) {
+            return response()->json(['message' => 'Emoji not found'], 404);
+        }
+
+        return response()->json([
+            'title'       => $emoji->title . ' - Line2Me Emoji Shop',
+            'description' => 'ซื้ออิโมจิไลน์ ' . $emoji->title . ' ในราคา ' . convertLineCoin2Money($emoji->price) . ' บาท พร้อมส่งฟรี',
+            'keywords'    => 'อิโมจิไลน์, ' . $emoji->title . ', emoji shop',
+            'image'       => 'https://stickershop.line-scdn.net/sticonshop/v1/product/' . $emoji->emoji_code . '/iphone/main.png',
+            'url'         => url('/emoji/' . $emoji->id),
+        ]);
+    }
+
 }

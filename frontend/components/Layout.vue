@@ -117,24 +117,33 @@ export default {
                 { to: "/", label: "หน้าแรก", icon: "home" },
                 { separator: true },
                 {
-                    to: "/stickers?category=official",
+                    to: "/stickers?category=official&country=",
                     label: "สติกเกอร์ไลน์ทางการ",
                 },
                 {
-                    to: "/stickers?category=creator",
+                    to: "/stickers?category=creator&country=",
                     label: "สติกเกอร์ไลน์ครีเอเตอร์",
                 },
                 { separator: true },
-                { to: "/themes?category=official", label: "ธีมไลน์ทางการ" },
-                { to: "/themes?category=creator", label: "ธีมไลน์ครีเอเตอร์" },
-                { separator: true },
-                { to: "/emojis?category=official", label: "อิโมจิไลน์ทางการ" },
                 {
-                    to: "/emojis?category=creator",
+                    to: "/themes?category=official&country=",
+                    label: "ธีมไลน์ทางการ",
+                },
+                {
+                    to: "/themes?category=creator&country=",
+                    label: "ธีมไลน์ครีเอเตอร์",
+                },
+                { separator: true },
+                {
+                    to: "/emojis?category=official&country=",
+                    label: "อิโมจิไลน์ทางการ",
+                },
+                {
+                    to: "/emojis?category=creator&country=",
                     label: "อิโมจิไลน์ครีเอเตอร์",
                 },
                 { separator: true },
-                { to: "/series", label: "แนะนำจากทางร้าน" },
+                // { to: "/series", label: "แนะนำจากทางร้าน" },
             ],
             screenIsLarge: false, // ตั้งค่าเริ่มต้นสำหรับ SSR
         };

@@ -156,7 +156,7 @@
 
 <script>
 import { ref, onMounted } from "vue";
-import { useRuntimeConfig, useRoute } from "#app";
+import { useRuntimeConfig, useRoute, useHead } from "#app";
 
 export default {
     setup() {
@@ -172,6 +172,33 @@ export default {
                 );
             } catch (error) {
                 console.error("Error loading emoji:", error);
+            }
+        };
+
+        const fetchEmojiSEO = async () => {
+            const emojiId = route.params.id;
+            try {
+                const response = await $fetch(
+                    `${runtimeConfig.public.apiBase}/emoji-seo/${emojiId}`
+                );
+
+                // ตั้งค่า Meta Tags
+                useHead({
+                    title: response.title,
+                    meta: [
+                        { name: "description", content: response.description },
+                        { name: "keywords", content: response.keywords },
+                        { property: "og:title", content: response.title },
+                        {
+                            property: "og:description",
+                            content: response.description,
+                        },
+                        { property: "og:image", content: response.image },
+                        { property: "og:url", content: response.url },
+                    ],
+                });
+            } catch (error) {
+                console.error("Error fetching emoji SEO:", error);
             }
         };
 
@@ -216,7 +243,10 @@ export default {
             return `/emojis?country=${emoji.value.country}`;
         };
 
-        onMounted(fetchEmojiData);
+        onMounted(async () => {
+            await fetchEmojiData(); // ดึงข้อมูลอิโมจิ
+            await fetchEmojiSEO(); // ดึงข้อมูล SEO และตั้งค่า Meta Tags
+        });
 
         return {
             emoji,

@@ -24,3 +24,8 @@ Route::get('/theme-view/{id}', [ThemeController::class, 'getThemeView']);
 Route::get('/emoji-update', [EmojiController::class, 'getEmojiUpdate']);
 Route::get('/emoji-more', [EmojiController::class, 'getEmojiMore']);
 Route::get('/emoji-view/{id}', [EmojiController::class, 'getEmojiView']);
+
+// SEO
+Route::get('/sticker-seo/{sticker_code}', [StickerController::class, 'getStickerSEO']);
+Route::get('/theme-seo/{id}', [ThemeController::class, 'getThemeSEO']);
+Route::get('/emoji-seo/{id}', [EmojiController::class, 'getEmojiSEO']);

@@ -114,4 +114,21 @@ class StickerController extends Controller
         return response()->json($stickerData);
     }
 
+    public function getStickerSEO($sticker_code)
+    {
+        $sticker = Sticker::where('sticker_code', $sticker_code)->first();
+
+        if (!$sticker) {
+            return response()->json(['message' => 'Sticker not found'], 404);
+        }
+
+        return response()->json([
+            'title'       => $sticker->title_th . ' - Line2Me Sticker Shop',
+            'description' => 'ซื้อสติกเกอร์ไลน์ ' . $sticker->title_th . ' ในราคา ' . convertLineCoin2Money($sticker->price) . ' บาท พร้อมส่งฟรี',
+            'keywords'    => 'สติกเกอร์ไลน์, ' . $sticker->title_th . ', line2me sticker shop',
+            'image'       => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+            'url'         => url('/sticker/' . $sticker->sticker_code),
+        ]);
+    }
+
 }

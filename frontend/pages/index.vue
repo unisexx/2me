@@ -25,7 +25,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRuntimeConfig } from "#app";
+import { useRuntimeConfig, useHead } from "#app";
 
 import Layout from "../components/Layout.vue";
 import ThemeCard from "../components/ThemeCard.vue";
@@ -37,6 +37,37 @@ const config = useRuntimeConfig();
 const stickers = ref([]); // ข้อมูลสำหรับสติกเกอร์
 const themes = ref([]); // ข้อมูลสำหรับธีม
 const emojis = ref([]); // ข้อมูลสำหรับอิโมจิ
+
+// ตั้งค่า SEO สำหรับหน้า Index
+useHead({
+    title: "Line2Me - สติกเกอร์ ธีม และอิโมจิใหม่ล่าสุด",
+    meta: [
+        {
+            name: "description",
+            content:
+                "ค้นหาสติกเกอร์ไลน์ ธีม และอิโมจิใหม่ล่าสุดจาก Line2Me พร้อมข้อมูลอัปเดตใหม่ทุกวัน รวมสินค้าลิขสิทธิ์แท้มากมายในราคาสุดคุ้ม",
+        },
+        {
+            name: "keywords",
+            content:
+                "สติกเกอร์ไลน์, ธีมไลน์, อิโมจิไลน์, สติกเกอร์ใหม่, ธีมใหม่, อิโมจิใหม่, Line2Me, สติกเกอร์ลิขสิทธิ์, ธีมลิขสิทธิ์, อิโมจิลิขสิทธิ์",
+        },
+        {
+            property: "og:title",
+            content: "Line2Me - สติกเกอร์ ธีม และอิโมจิใหม่ล่าสุด",
+        },
+        {
+            property: "og:description",
+            content:
+                "ค้นหาสติกเกอร์ไลน์ ธีม และอิโมจิใหม่ล่าสุดจาก Line2Me พร้อมข้อมูลอัปเดตใหม่ทุกวัน รวมสินค้าลิขสิทธิ์แท้มากมายในราคาสุดคุ้ม",
+        },
+        {
+            property: "og:image",
+            content: "https://example.com/default-og-image.jpg",
+        },
+        { property: "og:url", content: "https://example.com/" },
+    ],
+});
 
 // ดึงข้อมูลเมื่อ mounted
 const fetchStickerUpdate = async () => {

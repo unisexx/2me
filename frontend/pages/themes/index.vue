@@ -1,3 +1,149 @@
+<script>
+import Layout from "~/components/Layout.vue";
+import ThemeCard from "~/components/ThemeCard.vue";
+import { ref, computed, watch } from "vue";
+import { useRuntimeConfig, useRoute, useRouter, useHead } from "#app";
+
+export default {
+    components: {
+        Layout,
+        ThemeCard,
+    },
+    setup() {
+        const route = useRoute();
+        const router = useRouter();
+        const runtimeConfig = useRuntimeConfig();
+
+        // ตั้งค่าเริ่มต้นของ themes
+        const themes = ref({
+            data: [],
+            current_page: 1,
+            next_page_url: null,
+            prev_page_url: null,
+        });
+        const category = ref("");
+        const countries = ref({
+            "": "ทั้งหมด",
+            th: "ไทย",
+            jp: "ญี่ปุ่น",
+        });
+
+        const fetchThemes = async (page, category, country, order) => {
+            try {
+                const url = `${runtimeConfig.public.apiBase}/theme-more?page=${page}&category=${category}&country=${country}&order=${order}`;
+                const response = await $fetch(url);
+                themes.value = response;
+
+                if (typeof window !== "undefined") {
+                    window.scrollTo({ top: 0 });
+                }
+            } catch (error) {
+                console.error("Error fetching themes:", error);
+                themes.value.data = []; // เคลียร์ข้อมูลเมื่อ API ล้มเหลว
+            }
+        };
+
+        const headerTitle = computed(() => {
+            const currentCategory = category.value;
+            const currentCountry = route.query.country || "";
+            const countryLabel = countries.value[currentCountry] || "";
+
+            let baseTitle = "";
+            if (currentCategory === "official") {
+                baseTitle = "ธีมไลน์ทางการ";
+            } else if (currentCategory === "creator") {
+                baseTitle = "ธีมไลน์ครีเอเตอร์";
+            } else {
+                baseTitle = "ธีมไลน์ทั้งหมด";
+            }
+
+            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
+        });
+
+        const filteredCountries = computed(() => {
+            if (category.value === "creator") {
+                return {
+                    "": "ทั้งหมด",
+                    th: "ไทย",
+                    jp: "ญี่ปุ่น",
+                };
+            }
+            return countries.value;
+        });
+
+        const changePage = (page) => {
+            router.push({
+                query: {
+                    ...route.query,
+                    page,
+                },
+            });
+        };
+
+        const changeCountry = (country) => {
+            router.push({
+                query: {
+                    ...route.query,
+                    country,
+                    page: 1,
+                },
+            });
+        };
+
+        // การตั้งค่า SEO โดยใช้ useHead
+        useHead(() => {
+            const title = `${headerTitle.value} | Line2Me`;
+            const description = `สำรวจ ${headerTitle.value} ที่ Line2Me มีธีมไลน์หลากหลายหมวดหมู่ให้เลือกสรร พร้อมข้อมูลและราคาอัปเดตล่าสุด`;
+            const keywords = `ธีมไลน์, ${headerTitle.value}, ซื้อธีมไลน์, Line2Me`;
+
+            return {
+                title,
+                meta: [
+                    { name: "description", content: description },
+                    { name: "keywords", content: keywords },
+                    { property: "og:title", content: title },
+                    { property: "og:description", content: description },
+                    { property: "og:type", content: "website" },
+                    {
+                        property: "og:url",
+                        content: window?.location?.href || "",
+                    },
+                    {
+                        property: "og:image",
+                        content: "https://example.com/default-theme-image.jpg", // เปลี่ยน URL รูปภาพตามจริง
+                    },
+                ],
+            };
+        });
+
+        watch(
+            () => route.query,
+            (newQuery) => {
+                const page = newQuery.page || 1;
+                const categoryValue = newQuery.category || "";
+                const country = newQuery.country || "";
+                const order = newQuery.order || "new";
+
+                category.value = categoryValue;
+
+                fetchThemes(page, category.value, country, order);
+            },
+            { immediate: true }
+        );
+
+        return {
+            route,
+            themes,
+            countries,
+            headerTitle,
+            filteredCountries,
+            changePage,
+            changeCountry,
+        };
+    },
+};
+</script>
+
 <template>
     <Layout>
         <div class="container mx-auto">
@@ -22,7 +168,7 @@
             </div>
 
             <!-- ใช้ ThemeCard -->
-            <ThemeCard :themes="themes.data" />
+            <ThemeCard v-if="themes.data.length" :themes="themes.data" />
 
             <!-- Pagination Controls -->
             <div class="flex justify-between items-center mt-6">
@@ -44,119 +190,6 @@
         </div>
     </Layout>
 </template>
-
-<script>
-import Layout from "~/components/Layout.vue";
-import ThemeCard from "~/components/ThemeCard.vue";
-import { ref, computed, watch } from "vue";
-import { useRuntimeConfig, useRoute, useRouter } from "#app";
-
-export default {
-    components: {
-        Layout,
-        ThemeCard,
-    },
-    setup() {
-        const route = useRoute();
-        const router = useRouter();
-        const runtimeConfig = useRuntimeConfig();
-
-        const themes = ref({}); // ใช้สำหรับเก็บข้อมูล Pagination
-        const category = ref(""); // เก็บค่า category จาก URL
-        const countries = ref({
-            "": "ทั้งหมด",
-            th: "ไทย",
-            jp: "ญี่ปุ่น",
-        });
-
-        const fetchThemes = async (page, category, country, order) => {
-            try {
-                const url = `${runtimeConfig.public.apiBase}/theme-more?page=${page}&category=${category}&country=${country}&order=${order}`;
-                const response = await $fetch(url);
-                themes.value = response;
-                window.scrollTo({ top: 0 }); // เลื่อนหน้าจอไปด้านบนสุดหลังจากโหลดเสร็จ
-            } catch (error) {
-                console.error("Error fetching themes:", error);
-            }
-        };
-
-        const headerTitle = computed(() => {
-            const currentCategory = category.value;
-            const currentCountry = route.query.country || ""; // ดึง country จาก query parameter
-            const countryLabel = countries.value[currentCountry] || ""; // ดึงชื่อประเทศจาก countries
-
-            let baseTitle = "";
-            if (currentCategory === "official") {
-                baseTitle = "ธีมไลน์ทางการ";
-            } else if (currentCategory === "creator") {
-                baseTitle = "ธีมไลน์ครีเอเตอร์";
-            } else {
-                baseTitle = "ธีมไลน์ทั้งหมด";
-            }
-
-            // เพิ่มชื่อประเทศต่อท้าย หาก countryLabel ไม่ว่าง
-            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
-        });
-
-        const filteredCountries = computed(() => {
-            if (category.value === "creator") {
-                return {
-                    "": "ทั้งหมด",
-                    th: "ไทย",
-                    jp: "ญี่ปุ่น",
-                };
-            }
-            return countries.value;
-        });
-
-        const changePage = (page) => {
-            router.push({
-                query: {
-                    ...route.query,
-                    page, // อัปเดต page
-                },
-            });
-        };
-
-        const changeCountry = (country) => {
-            router.push({
-                query: {
-                    ...route.query,
-                    country, // อัปเดต country
-                    page: 1, // รีเซ็ตไปหน้าแรก
-                },
-            });
-        };
-
-        watch(
-            () => route.query,
-            (newQuery) => {
-                const page = newQuery.page || 1;
-                const categoryValue = newQuery.category || "";
-                const country = newQuery.country || "";
-                const order = newQuery.order || "new";
-
-                // อัปเดต category จาก query parameter
-                category.value = categoryValue;
-
-                // เรียก API เพื่อโหลดข้อมูล
-                fetchThemes(page, category.value, country, order);
-            },
-            { immediate: true }
-        );
-
-        return {
-            route,
-            themes,
-            countries,
-            headerTitle,
-            filteredCountries,
-            changePage,
-            changeCountry,
-        };
-    },
-};
-</script>
 
 <style scoped>
 button:disabled {

@@ -170,7 +170,7 @@
 <script>
 import Layout from "~/components/Layout.vue";
 import { ref, onMounted } from "vue";
-import { useRoute, useRuntimeConfig } from "#app";
+import { useRoute, useRuntimeConfig, useHead } from "#app";
 
 export default {
     components: {
@@ -184,12 +184,41 @@ export default {
         const fetchThemeData = async () => {
             const themeId = route.params.id;
             try {
+                // ดึงข้อมูลธีม
                 const response = await $fetch(
                     `${runtimeConfig.public.apiBase}/theme-view/${themeId}`
                 );
                 theme.value = response;
             } catch (error) {
                 console.error("Error loading theme:", error);
+            }
+        };
+
+        const fetchThemeSEO = async () => {
+            const themeId = route.params.id;
+            try {
+                // ดึงข้อมูล SEO
+                const response = await $fetch(
+                    `${runtimeConfig.public.apiBase}/theme-seo/${themeId}`
+                );
+
+                // ตั้งค่า Meta Tags
+                useHead({
+                    title: response.title,
+                    meta: [
+                        { name: "description", content: response.description },
+                        { name: "keywords", content: response.keywords },
+                        { property: "og:title", content: response.title },
+                        {
+                            property: "og:description",
+                            content: response.description,
+                        },
+                        { property: "og:image", content: response.image },
+                        { property: "og:url", content: response.url },
+                    ],
+                });
+            } catch (error) {
+                console.error("Error loading theme SEO:", error);
             }
         };
 
@@ -233,7 +262,10 @@ export default {
             return `/themes?country=${theme.value.country}`;
         };
 
-        onMounted(fetchThemeData);
+        onMounted(async () => {
+            await fetchThemeData();
+            await fetchThemeSEO();
+        });
 
         return {
             theme,

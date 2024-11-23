@@ -239,16 +239,18 @@
 <script>
 import Layout from "~/components/Layout.vue";
 import { ref, onMounted } from "vue";
-import { useRuntimeConfig, useRoute } from "#app";
+import { useRuntimeConfig, useRoute, useHead } from "#app";
 
 export default {
     components: { Layout },
     setup() {
         const sticker = ref(null);
+        const seoData = ref(null);
         const loading = ref(true);
         const runtimeConfig = useRuntimeConfig();
         const route = useRoute();
 
+        // ดึงข้อมูล Sticker
         const fetchStickerData = async (stickerCode) => {
             try {
                 const response = await $fetch(
@@ -262,11 +264,41 @@ export default {
             }
         };
 
+        // ดึงข้อมูล SEO
+        const fetchStickerSEO = async (stickerCode) => {
+            try {
+                const response = await $fetch(
+                    `${runtimeConfig.public.apiBase}/sticker-seo/${stickerCode}`
+                );
+                seoData.value = response;
+
+                // ตั้งค่า Meta Tags
+                useHead({
+                    title: response.title,
+                    meta: [
+                        { name: "description", content: response.description },
+                        { name: "keywords", content: response.keywords },
+                        { property: "og:title", content: response.title },
+                        {
+                            property: "og:description",
+                            content: response.description,
+                        },
+                        { property: "og:image", content: response.image },
+                        { property: "og:url", content: response.url },
+                    ],
+                });
+            } catch (error) {
+                console.error("Error fetching SEO data:", error);
+            }
+        };
+
         onMounted(() => {
             const stickerCode = route.params.id;
             fetchStickerData(stickerCode);
+            fetchStickerSEO(stickerCode);
         });
 
+        // ฟังก์ชันเพิ่มเติม (คงไว้จากโค้ดเดิม)
         const getCategoryText = () => {
             if (!sticker.value) return "";
             if (sticker.value.category === "official") return "สติกเกอร์ทางการ";
@@ -346,12 +378,13 @@ export default {
 
         return {
             sticker,
+            seoData,
             loading,
             getCategoryText,
             getCategoryLink,
             getCountryText,
             getCountryLink,
-            getStickerResourceTypeText, // เพิ่มฟังก์ชันนี้
+            getStickerResourceTypeText,
             getStickerUrl,
             getAnimationUrl,
             changeToAnimation,

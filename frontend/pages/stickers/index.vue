@@ -1,3 +1,154 @@
+<script>
+import Layout from "~/components/Layout.vue";
+import StickerCard from "~/components/StickerCard.vue";
+import { ref, watch, computed } from "vue";
+import { useRuntimeConfig, useRoute, useRouter, useHead } from "#app";
+
+export default {
+    components: {
+        Layout,
+        StickerCard,
+    },
+    setup() {
+        const route = useRoute();
+        const router = useRouter();
+        const runtimeConfig = useRuntimeConfig();
+
+        // ตั้งค่าเริ่มต้นของ stickers
+        const stickers = ref({
+            data: [],
+            current_page: 1,
+            next_page_url: null,
+            prev_page_url: null,
+        });
+
+        const category = ref("");
+        const countries = ref({
+            "": "ทั้งหมด",
+            th: "ไทย",
+            jp: "ญี่ปุ่น",
+            tw: "ไต้หวัน",
+            id: "อินโดนีเซีย",
+        });
+
+        const fetchStickers = async (page, category, country, order) => {
+            try {
+                const url = `${runtimeConfig.public.apiBase}/sticker-more?page=${page}&category=${category}&country=${country}&order=${order}`;
+                const response = await $fetch(url);
+                stickers.value = response;
+
+                // เช็คว่าอยู่ใน Browser ก่อนเลื่อนหน้า
+                if (typeof window !== "undefined") {
+                    window.scrollTo({ top: 0 });
+                }
+            } catch (error) {
+                console.error("Error fetching stickers:", error);
+                stickers.value.data = []; // เคลียร์ข้อมูลเมื่อ API ล้มเหลว
+            }
+        };
+
+        const headerTitle = computed(() => {
+            const currentCategory = category.value;
+            const currentCountry = route.query.country || "";
+            const countryLabel = countries.value[currentCountry] || "";
+
+            let baseTitle = "";
+            if (currentCategory === "official") {
+                baseTitle = "สติกเกอร์ไลน์ทางการ";
+            } else if (currentCategory === "creator") {
+                baseTitle = "สติกเกอร์ไลน์ครีเอเตอร์";
+            } else {
+                baseTitle = "สติกเกอร์ทั้งหมด";
+            }
+
+            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
+        });
+
+        const filteredCountries = computed(() => {
+            if (category.value === "creator") {
+                return {
+                    "": "ทั้งหมด",
+                    th: "ไทย",
+                    jp: "ญี่ปุ่น",
+                    tw: "ไต้หวัน",
+                };
+            }
+            return countries.value;
+        });
+
+        const changePage = (page) => {
+            router.push({
+                query: {
+                    ...route.query,
+                    page,
+                },
+            });
+        };
+
+        const changeCountry = (country) => {
+            router.push({
+                query: {
+                    ...route.query,
+                    country,
+                    page: 1,
+                },
+            });
+        };
+
+        // ตั้งค่า SEO โดยใช้ useHead
+        useHead(() => {
+            const title = `${headerTitle.value} | Line2Me`;
+            const description = `สำรวจ ${headerTitle.value} ที่ Line2Me มีสติกเกอร์หลากหลายหมวดหมู่ พร้อมรายละเอียดและราคา`;
+            const keywords = `สติกเกอร์ไลน์, ${headerTitle.value}, ซื้อสติกเกอร์, Line2Me`;
+
+            return {
+                title,
+                meta: [
+                    { name: "description", content: description },
+                    { name: "keywords", content: keywords },
+                    { property: "og:title", content: title },
+                    { property: "og:description", content: description },
+                    { property: "og:type", content: "website" },
+                    {
+                        property: "og:url",
+                        content: window?.location?.href || "",
+                    },
+                    {
+                        property: "og:image",
+                        content:
+                            "https://example.com/default-sticker-image.jpg", // เปลี่ยน URL รูปภาพตามจริง
+                    },
+                ],
+            };
+        });
+
+        watch(
+            () => route.query,
+            (newQuery) => {
+                const page = newQuery.page || 1;
+                const country = newQuery.country || "";
+                const order = newQuery.order || "new";
+
+                category.value = newQuery.category || "";
+
+                fetchStickers(page, category.value, country, order);
+            },
+            { immediate: true }
+        );
+
+        return {
+            route,
+            stickers,
+            countries,
+            headerTitle,
+            filteredCountries,
+            changePage,
+            changeCountry,
+        };
+    },
+};
+</script>
+
 <template>
     <Layout>
         <div class="container mx-auto">
@@ -22,7 +173,10 @@
             </div>
 
             <!-- ใช้ StickerCard -->
-            <StickerCard :stickers="stickers.data" />
+            <StickerCard
+                v-if="stickers.data.length"
+                :stickers="stickers.data"
+            />
 
             <!-- Pagination Controls -->
             <div class="flex justify-between items-center mt-6">
@@ -44,123 +198,6 @@
         </div>
     </Layout>
 </template>
-
-<script>
-import Layout from "~/components/Layout.vue";
-import StickerCard from "~/components/StickerCard.vue";
-import { ref, watch, computed } from "vue";
-import { useRuntimeConfig, useRoute, useRouter } from "#app";
-
-export default {
-    components: {
-        Layout,
-        StickerCard,
-    },
-    setup() {
-        const route = useRoute();
-        const router = useRouter();
-        const runtimeConfig = useRuntimeConfig();
-
-        const stickers = ref({}); // ใช้สำหรับเก็บข้อมูล Pagination
-        const category = ref(""); // เก็บค่า category จาก URL
-        const countries = ref({
-            "": "ทั้งหมด",
-            th: "ไทย",
-            jp: "ญี่ปุ่น",
-            tw: "ไต้หวัน",
-            id: "อินโดนีเซีย",
-        });
-
-        const fetchStickers = async (page, category, country, order) => {
-            try {
-                const url = `${runtimeConfig.public.apiBase}/sticker-more?page=${page}&category=${category}&country=${country}&order=${order}`;
-                const response = await $fetch(url);
-                stickers.value = response;
-
-                // เลื่อนหน้าจอไปด้านบนสุดหลังจากโหลดเสร็จ
-                window.scrollTo({ top: 0 });
-            } catch (error) {
-                console.error("Error fetching stickers:", error);
-            }
-        };
-
-        const headerTitle = computed(() => {
-            const currentCategory = category.value;
-            const currentCountry = route.query.country || ""; // ดึง country จาก query parameter
-            const countryLabel = countries.value[currentCountry] || ""; // ดึงชื่อประเทศจาก countries
-
-            let baseTitle = "";
-            if (currentCategory === "official") {
-                baseTitle = "สติกเกอร์ไลน์ทางการ";
-            } else if (currentCategory === "creator") {
-                baseTitle = "สติกเกอร์ไลน์ครีเอเตอร์";
-            } else {
-                baseTitle = "สติกเกอร์ทั้งหมด";
-            }
-
-            // เพิ่มชื่อประเทศต่อท้าย หาก countryLabel ไม่ว่าง
-            return countryLabel ? `${baseTitle}${countryLabel}` : baseTitle;
-        });
-
-        const filteredCountries = computed(() => {
-            if (category.value === "creator") {
-                return {
-                    "": "ทั้งหมด",
-                    th: "ไทย",
-                    jp: "ญี่ปุ่น",
-                    tw: "ไต้หวัน",
-                };
-            }
-            return countries.value;
-        });
-
-        const changePage = (page) => {
-            router.push({
-                query: {
-                    ...route.query,
-                    page, // อัปเดต page
-                },
-            });
-        };
-
-        const changeCountry = (country) => {
-            router.push({
-                query: {
-                    ...route.query,
-                    country,
-                    page: 1, // รีเซ็ตไปหน้าแรก
-                },
-            });
-        };
-
-        watch(
-            () => route.query,
-            (newQuery) => {
-                const page = newQuery.page || 1;
-                const country = newQuery.country || "";
-                const order = newQuery.order || "new";
-
-                // อัปเดต category จาก query parameter
-                category.value = newQuery.category || "";
-
-                // เรียก API เพื่อโหลดข้อมูล
-                fetchStickers(page, category.value, country, order);
-            },
-            { immediate: true }
-        );
-
-        return {
-            route,
-            stickers,
-            countries,
-            headerTitle,
-            filteredCountries,
-            changePage,
-            changeCountry,
-        };
-    },
-};
-</script>
 
 <style scoped>
 button:disabled {
