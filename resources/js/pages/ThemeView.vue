@@ -260,4 +260,8 @@ export default {
 
 <style scoped>
 /* คุณสามารถเพิ่มสไตล์เพิ่มเติมได้ที่นี่ */
+h1 {
+    word-break: break-word; /* จัดการคำที่ยาวติดกัน */
+    overflow-wrap: anywhere; /* ขึ้นบรรทัดใหม่ได้ทุกที่ */
+}
 </style>

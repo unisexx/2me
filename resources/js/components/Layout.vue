@@ -15,11 +15,17 @@
             <div class="lg:hidden">
                 <!-- Floating Button -->
                 <button
-                    class="fixed top-3 right-4 bg-blue-700 text-white p-2 rounded-md shadow-lg hover:bg-blue-600 focus:outline-none z-50"
+                    class="fixed top-3 right-4 bg-blue-700 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 focus:outline-none flex items-center justify-center z-50"
                     @click="toggleAside"
                 >
-                    <span v-if="isCollapsed">เปิดเมนู</span>
-                    <span v-else>ปิดเมนู</span>
+                    <span v-if="isCollapsed" class="material-icons text-2xl">
+                        menu
+                        <!-- ไอคอนเปิดเมนู -->
+                    </span>
+                    <span v-else class="material-icons text-2xl">
+                        close
+                        <!-- ไอคอนปิดเมนู -->
+                    </span>
                 </button>
 
                 <!-- Aside Menu -->
@@ -110,7 +116,7 @@ export default {
     name: "Layout",
     data() {
         return {
-            isCollapsed: false, // ค่าเริ่มต้น: ขยายสำหรับ Desktop
+            isCollapsed: true, // ค่าเริ่มต้น: ซ่อนเมนูใน Mobile Layout
             menus: [
                 { to: "/", label: "หน้าแรก", icon: "home" },
                 { separator: true },
@@ -162,8 +168,8 @@ export default {
         },
         setDefaultAsideState() {
             const screenWidth = window.innerWidth;
-            this.isCollapsed = screenWidth < 1280;
             this.screenIsLarge = screenWidth >= 1024;
+            this.isCollapsed = !this.screenIsLarge; // ซ่อนเมนูหากเป็น Mobile Layout
         },
     },
 };

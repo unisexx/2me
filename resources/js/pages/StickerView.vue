@@ -390,26 +390,12 @@ export default {
 </script>
 
 <style scoped>
-.breadcrumb {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 0.5rem;
-}
-
-.breadcrumb-item {
-    display: flex;
-    align-items: center;
-}
-
-.breadcrumb-item a {
-    text-decoration: none;
-}
-
-.breadcrumb-item.active {
-    color: #6b7280;
-}
+/* คุณสามารถเพิ่มสไตล์เพิ่มเติมได้ที่นี่ */
 .stampImg {
     cursor: pointer;
+}
+h1 {
+    word-break: break-word; /* จัดการคำที่ยาวติดกัน */
+    overflow-wrap: anywhere; /* ขึ้นบรรทัดใหม่ได้ทุกที่ */
 }
 </style>
