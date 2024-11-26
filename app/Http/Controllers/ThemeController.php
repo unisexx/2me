@@ -126,7 +126,7 @@ class ThemeController extends Controller
         }
 
         return response()->json([
-            'title'       => $theme->title . ' - Line2Me Theme Shop',
+            'title'       => $theme->title . ' - line2me',
             'description' => 'ซื้อธีมไลน์ ' . $theme->title . ' ในราคา ' . convertLineCoin2Money($theme->price) . ' บาท พร้อมส่งฟรี',
             'keywords'    => 'ธีมไลน์, ' . $theme->title . ', theme shop',
             'image'       => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),

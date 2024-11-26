@@ -129,7 +129,7 @@ class StickerController extends Controller
         }
 
         return response()->json([
-            'title'       => $sticker->title_th . ' - Line2Me Sticker Shop',
+            'title'       => $sticker->title_th . ' - line2me',
             'description' => 'ซื้อสติกเกอร์ไลน์ ' . $sticker->title_th . ' ในราคา ' . convertLineCoin2Money($sticker->price) . ' บาท พร้อมส่งฟรี',
             'keywords'    => 'สติกเกอร์ไลน์, ' . $sticker->title_th . ', line2me sticker shop',
             'image'       => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
