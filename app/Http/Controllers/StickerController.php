@@ -112,7 +112,7 @@ class StickerController extends Controller
         );
 
         // เก็บสถิติ views_last_3_days
-        recordProductView('sticker', $sticker->sticker_code);
+        // recordProductView('sticker', $sticker->sticker_code);
 
         return response()->json($stickerData);
     }

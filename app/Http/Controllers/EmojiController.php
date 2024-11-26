@@ -104,7 +104,7 @@ class EmojiController extends Controller
         );
 
         // เก็บสถิติ views_last_3_days
-        recordProductView('emoji', $emoji->emoji_code);
+        // recordProductView('emoji', $emoji->emoji_code);
 
         return response()->json($emojiData);
     }
