@@ -109,7 +109,7 @@ class ThemeController extends Controller
         );
 
         // เก็บสถิติ views_last_3_days
-        recordProductView('theme', $theme->theme_code);
+        // recordProductView('theme', $theme->theme_code);
 
         return response()->json($themeData);
     }
