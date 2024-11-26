@@ -61,45 +61,35 @@ if (!function_exists('recordProductView')) {
         $ipAddress = request()->ip();
         $today     = Carbon::today();
 
-        // ตรวจสอบว่ามี record ที่ตรงกับเงื่อนไขหรือไม่
-        $viewExists = DB::table('product_views')
+        // ใช้ insertOrIgnore เพื่อบันทึกข้อมูลโดยป้องกันการบันทึกซ้ำ
+        DB::table('product_views')->insertOrIgnore([
+            'product_id' => $id,
+            'type'       => $type,
+            'ip_address' => $ipAddress,
+            'view_date'  => $today,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // นับยอดวิวในช่วง 3 วันล่าสุด
+        $threeDaysAgo = Carbon::now()->subDays(3);
+        $viewsCount   = DB::table('product_views')
             ->where('product_id', $id)
             ->where('type', $type)
-            ->where('ip_address', $ipAddress)
-            ->whereDate('view_date', $today)
-            ->exists();
+            ->where('view_date', '>=', $threeDaysAgo)
+            ->count();
 
-        // ถ้าไม่มี ให้สร้าง record ใหม่
-        if (!$viewExists) {
-            DB::table('product_views')->insert([
-                'product_id' => $id,
-                'type'       => $type,
-                'ip_address' => $ipAddress,
-                'view_date'  => $today,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            $threeDaysAgo = Carbon::now()->subDays(3);
-            $viewsCount   = DB::table('product_views')->where('product_id', $id)->where('type', $type)
-                ->where('view_date', '>=', $threeDaysAgo)
-                ->count();
-
-            // อัพเดทยอดวิวตาราง sticker
-            if ($type == 'sticker') {
+        // อัพเดทยอดวิวในตารางที่เกี่ยวข้อง
+        switch ($type) {
+            case 'sticker':
                 Sticker::find($id)->update(['views_last_3_days' => $viewsCount]);
-            }
-
-            // อัพเดทยอดวิวตาราง theme
-            if ($type == 'theme') {
+                break;
+            case 'theme':
                 Theme::find($id)->update(['views_last_3_days' => $viewsCount]);
-            }
-
-            // อัพเดทยอดวิวตาราง emoji
-            if ($type == 'emoji') {
+                break;
+            case 'emoji':
                 Emoji::find($id)->update(['views_last_3_days' => $viewsCount]);
-            }
-
+                break;
         }
     }
 }
