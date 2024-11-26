@@ -1,5 +1,13 @@
 <?php
 
+use App\Models\Emoji;
+use App\Models\Sticker;
+use App\Models\Theme;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Session;
+
 if (!function_exists('getStickerImgUrl')) {
     function getStickerImgUrl($stickerresourcetype, $version, $sticker_code)
     {
@@ -25,7 +33,7 @@ if (!function_exists('convertLineCoin2Money')) {
 }
 
 if (!function_exists('generateThemeUrl')) {
-function generateThemeUrl($uuid, $section = false)
+    function generateThemeUrl($uuid, $section = false)
     {
         $section      = !empty($section) ? $section : 1;
         $baseUrl      = 'https://shop.line-scdn.net/themeshop/v1/products/';
@@ -43,5 +51,70 @@ if (!function_exists('generateThemeUrlDetail')) {
         $formattedUrl = $baseUrl . substr($uuid, 0, 2) . '/' . substr($uuid, 2, 2) . '/' . substr($uuid, 4, 2) . '/' . $uuid . '/' . $section . '/ANDROID/th/preview_00' . $imgOrder . '_720x1232.png';
 
         return $formattedUrl;
+    }
+}
+
+// อัพเดท views_last_3_days
+if (!function_exists('recordProductView')) {
+    function recordProductView($type, $productCode)
+    {
+        $ipAddress = request()->ip();
+        $today     = Carbon::today();
+
+        // ตรวจสอบว่ามี record ที่ตรงกับเงื่อนไขหรือไม่
+        $viewExists = DB::table('product_views')
+            ->where('product_code', $productCode)
+            ->where('type', $type)
+            ->where('ip_address', $ipAddress)
+            ->whereDate('view_date', $today)
+            ->exists();
+
+        // ถ้าไม่มี ให้สร้าง record ใหม่
+        if (!$viewExists) {
+            DB::table('product_views')->insert([
+                'product_code' => $productCode,
+                'type'         => $type,
+                'ip_address'   => $ipAddress,
+                'view_date'    => $today,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+
+            $threeDaysAgo = Carbon::now()->subDays(3);
+            $viewsCount   = DB::table('product_views')->where('type', $type)->where('product_code', $productCode)
+                ->where('view_date', '>=', $threeDaysAgo)
+                ->count();
+
+            // อัพเดทยอดวิวตาราง sticker
+            if ($type == 'sticker') {
+                Sticker::where('sticker_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+            }
+
+            // อัพเดทยอดวิวตาราง theme
+            if ($type == 'theme') {
+                Theme::where('theme_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+            }
+
+            // อัพเดทยอดวิวตาราง emoji
+            if ($type == 'emoji') {
+                Emoji::where('emoji_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+            }
+
+        }
+    }
+}
+
+if (!function_exists('storeViewHistory')) {
+    function storeViewHistory($type, $id)
+    {
+        $sessionId = Session::getId();
+        $key       = "session:{$sessionId}:viewed_{$type}s";
+
+                                   // เก็บ product_id ใน Redis โดยใช้ list
+        Redis::lrem($key, 0, $id); // ลบรายการที่ซ้ำกัน
+        Redis::lpush($key, $id);   // เพิ่ม product_id เข้าไปที่หัวรายการ
+
+        // เก็บประวัติสูงสุด 12 รายการ
+        Redis::ltrim($key, 0, 11);
     }
 }
