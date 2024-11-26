@@ -109,7 +109,10 @@ class ThemeController extends Controller
         );
 
         // เก็บสถิติ views_last_3_days
-        // recordProductView('theme', $theme->theme_code);
+        // ใช้ register_shutdown_function เพื่อบันทึกข้อมูลหลังจาก response
+        register_shutdown_function(function () use ($theme) {
+            recordProductView('theme', $theme->id);
+        });
 
         return response()->json($themeData);
     }

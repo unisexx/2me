@@ -56,14 +56,14 @@ if (!function_exists('generateThemeUrlDetail')) {
 
 // อัพเดท views_last_3_days
 if (!function_exists('recordProductView')) {
-    function recordProductView($type, $productCode)
+    function recordProductView($type, $id)
     {
         $ipAddress = request()->ip();
         $today     = Carbon::today();
 
         // ตรวจสอบว่ามี record ที่ตรงกับเงื่อนไขหรือไม่
         $viewExists = DB::table('product_views')
-            ->where('product_code', $productCode)
+            ->where('product_id', $id)
             ->where('type', $type)
             ->where('ip_address', $ipAddress)
             ->whereDate('view_date', $today)
@@ -72,32 +72,32 @@ if (!function_exists('recordProductView')) {
         // ถ้าไม่มี ให้สร้าง record ใหม่
         if (!$viewExists) {
             DB::table('product_views')->insert([
-                'product_code' => $productCode,
-                'type'         => $type,
-                'ip_address'   => $ipAddress,
-                'view_date'    => $today,
-                'created_at'   => now(),
-                'updated_at'   => now(),
+                'product_id' => $id,
+                'type'       => $type,
+                'ip_address' => $ipAddress,
+                'view_date'  => $today,
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
 
             $threeDaysAgo = Carbon::now()->subDays(3);
-            $viewsCount   = DB::table('product_views')->where('type', $type)->where('product_code', $productCode)
+            $viewsCount   = DB::table('product_views')->where('product_id', $id)->where('type', $type)
                 ->where('view_date', '>=', $threeDaysAgo)
                 ->count();
 
             // อัพเดทยอดวิวตาราง sticker
             if ($type == 'sticker') {
-                Sticker::where('sticker_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+                Sticker::find($id)->update(['views_last_3_days' => $viewsCount]);
             }
 
             // อัพเดทยอดวิวตาราง theme
             if ($type == 'theme') {
-                Theme::where('theme_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+                Theme::find($id)->update(['views_last_3_days' => $viewsCount]);
             }
 
             // อัพเดทยอดวิวตาราง emoji
             if ($type == 'emoji') {
-                Emoji::where('emoji_code', $productCode)->update(['views_last_3_days' => $viewsCount]);
+                Emoji::find($id)->update(['views_last_3_days' => $viewsCount]);
             }
 
         }
