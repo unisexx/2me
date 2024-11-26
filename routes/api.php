@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmojiController;
+use App\Http\Controllers\PromoteController;
 use App\Http\Controllers\StickerController;
 use App\Http\Controllers\ThemeController;
 use Illuminate\Http\Request;
@@ -9,6 +10,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+// Promote
+Route::get('/promote-sticker', [PromoteController::class, 'getPromoteSticker']);
 
 // Sticker
 Route::get('/sticker-update', [StickerController::class, 'getStickerUpdate']);
