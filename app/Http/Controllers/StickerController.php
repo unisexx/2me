@@ -10,6 +10,7 @@ class StickerController extends Controller
 {
     public function getStickerUpdate()
     {
+        // สติกเกอร์อัพเดทประจำสัปดาห์
         $stickerUpdate = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('category', 'official')
             ->where('status', 1)
@@ -34,6 +35,7 @@ class StickerController extends Controller
         return response()->json($stickerUpdate);
     }
 
+    // หน้าลิสต์สติกเกอร์
     public function getStickerMore(Request $request)
     {
         $perPage = 48;
@@ -90,6 +92,7 @@ class StickerController extends Controller
         return response()->json($stickers);
     }
 
+    // หน้าวิวสติกเกอร์
     public function getStickerView($sticker_code)
     {
         $sticker = Sticker::where('sticker_code', $sticker_code)->first();
@@ -120,6 +123,7 @@ class StickerController extends Controller
         return response()->json($stickerData);
     }
 
+    // seo หน้าวิวสติกเกอร์
     public function getStickerSEO($sticker_code)
     {
         $sticker = Sticker::where('sticker_code', $sticker_code)->first();
@@ -135,6 +139,32 @@ class StickerController extends Controller
             'image'       => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
             'url'         => url('/sticker/' . $sticker->sticker_code),
         ]);
+    }
+
+    // สติกเกอร์อื่นๆค้นหาตามชื่อผู้สร้าง
+    public function getStickerByAuthor(Request $request)
+    {
+        $stickerUpdate = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+            ->where('author_th', $request->author_th)
+            ->where('status', 1)
+            ->take(6)
+            ->get()
+            ->map(function ($sticker) {
+                $createdAt = Carbon::parse($sticker->created_at);
+                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                return [
+                    'sticker_code' => $sticker->sticker_code,
+                    'title_th'     => $sticker->title_th,
+                    'country'      => $sticker->country,
+                    'price'        => convertLineCoin2Money($sticker->price),
+                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                    'is_new'       => $isNew, // เพิ่มตัวแปร is_new
+                ];
+            });
+
+        return response()->json($stickerUpdate);
     }
 
 }
