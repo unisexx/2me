@@ -148,33 +148,9 @@ class StickerController extends Controller
         $stickerUpdate = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('author_th', $request->author_th)
             ->where('sticker_code', '!=', $request->sticker_code)
-            ->where('country', '!=', $request->country)
-            ->where('status', 1)
-            ->inRandomOrder()
-            ->take(6)
-            ->get()
-            ->map(function ($sticker) {
-                $createdAt = Carbon::parse($sticker->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
-
-                return [
-                    'sticker_code' => $sticker->sticker_code,
-                    'title_th'     => $sticker->title_th,
-                    'country'      => $sticker->country,
-                    'price'        => convertLineCoin2Money($sticker->price),
-                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
-                    'is_new'       => $isNew,
-                ];
-            });
-
-        // คิวรี่สำหรับสุ่มสติกเกอร์
-        $stickerRandom = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '!=', $request->sticker_code)
             ->where('country', $request->country)
             ->where('status', 1)
-            ->inRandomOrder()
-            ->take(3)
+            ->take(10)
             ->get()
             ->map(function ($sticker) {
                 $createdAt = Carbon::parse($sticker->created_at);
@@ -191,10 +167,33 @@ class StickerController extends Controller
                 ];
             });
 
-        // รวมข้อมูลทั้งสองคิวรี่
-        $result = $stickerUpdate->merge($stickerRandom);
+        // // คิวรี่สำหรับสุ่มสติกเกอร์
+        // $stickerRandom = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        //     ->where('sticker_code', '!=', $request->sticker_code)
+        //     ->where('country', $request->country)
+        //     ->where('status', 1)
+        //     ->orderByRaw('RAND()')
+        //     ->take(6)
+        //     ->get()
+        //     ->map(function ($sticker) {
+        //         $createdAt = Carbon::parse($sticker->created_at);
+        //         $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
-        return response()->json($result);
+        //         return [
+        //             'sticker_code' => $sticker->sticker_code,
+        //             'title_th'     => $sticker->title_th,
+        //             'country'      => $sticker->country,
+        //             'price'        => convertLineCoin2Money($sticker->price),
+        //             'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+        //             'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+        //             'is_new'       => $isNew,
+        //         ];
+        //     });
+
+        // // แปลงข้อมูลให้เป็นคอลเลกชันก่อนรวม
+        // $result = collect($stickerUpdate)->merge(collect($stickerRandom));
+
+        return response()->json($stickerUpdate);
     }
 
 }
