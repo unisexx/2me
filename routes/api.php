@@ -18,7 +18,7 @@ Route::get('/promote-sticker', [PromoteController::class, 'getPromoteSticker']);
 Route::get('/sticker-update', [StickerController::class, 'getStickerUpdate']);
 Route::get('/sticker-more', [StickerController::class, 'getStickerMore']);
 Route::get('/sticker-view/{sticker_code}', [StickerController::class, 'getStickerView']);
-Route::get('/sticker-by-author/{author_th}', [StickerController::class, 'getStickerByAuthor']);
+Route::get('/sticker-by-author', [StickerController::class, 'getStickerByAuthor']);
 
 // Theme
 Route::get('/theme-update', [ThemeController::class, 'getThemeUpdate']);
