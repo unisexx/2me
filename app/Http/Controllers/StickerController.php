@@ -145,11 +145,12 @@ class StickerController extends Controller
     public function getStickerByAuthor(Request $request)
     {
         // คิวรี่สำหรับอัปเดตสติกเกอร์
-        $stickerUpdate = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        $stickerAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('author_th', $request->author_th)
             ->where('sticker_code', '!=', $request->sticker_code)
             ->where('country', $request->country)
             ->where('status', 1)
+            ->inRandomOrder()
             ->take(10)
             ->get()
             ->map(function ($sticker) {
@@ -193,7 +194,7 @@ class StickerController extends Controller
         // // แปลงข้อมูลให้เป็นคอลเลกชันก่อนรวม
         // $result = collect($stickerUpdate)->merge(collect($stickerRandom));
 
-        return response()->json($stickerUpdate);
+        return response()->json($stickerAuthor);
     }
 
 }

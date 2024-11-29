@@ -142,6 +142,7 @@ class ThemeController extends Controller
             ->where('id', '!=', $request->id)
             ->where('country', $request->country)
             ->where('status', 1)
+            ->inRandomOrder()
             ->take(10)
             ->get()
             ->map(function ($theme) {
