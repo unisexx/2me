@@ -143,7 +143,7 @@ class ThemeController extends Controller
             ->where('country', $request->country)
             ->where('status', 1)
             ->inRandomOrder()
-            ->take(10)
+            ->take(12)
             ->get()
             ->map(function ($theme) {
                 $createdAt = Carbon::parse($theme->created_at);
