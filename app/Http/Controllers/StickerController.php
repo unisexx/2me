@@ -152,62 +152,51 @@ class StickerController extends Controller
             ->where('status', 1)
             ->inRandomOrder()
             ->take(10)
-            ->get()
-            ->map(function ($sticker) {
-                $createdAt = Carbon::parse($sticker->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+            ->get();
 
-                return [
-                    'sticker_code' => $sticker->sticker_code,
-                    'title_th'     => $sticker->title_th,
-                    'country'      => $sticker->country,
-                    'price'        => convertLineCoin2Money($sticker->price),
-                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
-                    'is_new'       => $isNew,
-                ];
-            });
+        // Debug ผลลัพธ์
+        if ($stickerAuthor->isEmpty()) {
+            dd("No data found in stickerAuthor query");
+        }
 
         // รายการที่ sticker_code มากกว่า $request->sticker_code
         $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '>', $request->sticker_code) // เงื่อนไขมากกว่า
+            ->where('sticker_code', '>', $request->sticker_code)
             ->where('category', $request->category)
             ->where('country', $request->country)
             ->where('status', 1)
             ->inRandomOrder()
             ->take(5)
-            ->get()
-            ->map(function ($sticker) {
-                $createdAt = Carbon::parse($sticker->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+            ->get();
 
-                return [
-                    'sticker_code' => $sticker->sticker_code,
-                    'title_th'     => $sticker->title_th,
-                    'country'      => $sticker->country,
-                    'price'        => convertLineCoin2Money($sticker->price),
-                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
-                    'is_new'       => $isNew,
-                ];
-            });
+        // Debug ผลลัพธ์
+        if ($stickerOther->isEmpty()) {
+            dd("No data found in stickerOther query");
+        }
 
         // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
-        $stickerAuthor = $stickerAuthor->concat($stickerOther)
-            ->map(function ($sticker) {
-                $createdAt = Carbon::parse($sticker->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+        $mergedStickers = $stickerAuthor->concat($stickerOther);
 
-                return [
-                    'sticker_code' => $sticker->sticker_code,
-                    'title_th'     => $sticker->title_th,
-                    'country'      => $sticker->country,
-                    'price'        => convertLineCoin2Money($sticker->price),
-                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
-                    'is_new'       => $isNew,
-                ];
-            });
+        // Debug ผลลัพธ์รวม
+        if ($mergedStickers->isEmpty()) {
+            dd("No data found in merged stickers");
+        }
+
+        // แปลงข้อมูล
+        $stickerAuthor = $mergedStickers->map(function ($sticker) {
+            $createdAt = Carbon::parse($sticker->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+            return [
+                'sticker_code' => $sticker->sticker_code,
+                'title_th'     => $sticker->title_th,
+                'country'      => $sticker->country,
+                'price'        => convertLineCoin2Money($sticker->price),
+                'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                'is_new'       => $isNew,
+            ];
+        });
 
         return response()->json($stickerAuthor);
     }
