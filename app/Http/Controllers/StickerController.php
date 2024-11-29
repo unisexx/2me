@@ -161,7 +161,7 @@ class StickerController extends Controller
 
         // รายการที่ sticker_code มากกว่า $request->sticker_code
         $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '>', $request->sticker_code)
+            ->where('sticker_code', '!=', $request->sticker_code)
             ->where('category', $request->category)
             ->where('country', $request->country)
             ->where('status', 1)
