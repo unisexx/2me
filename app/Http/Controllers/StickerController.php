@@ -144,35 +144,41 @@ class StickerController extends Controller
     // สติกเกอร์อื่นๆค้นหาตามชื่อผู้สร้าง
     public function getStickerByAuthor(Request $request)
     {
+        $stickerCode = $request->sticker_code;
+
         // รายการที่ sticker_code มากกว่า ตามผู้สร้าง
         $greaterStickersAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('author_th', $request->author_th)
-            ->where('sticker_code', '>', $request->sticker_code) // เงื่อนไขมากกว่า
+            ->where('sticker_code', '>', $stickerCode)
             ->where('country', $request->country)
             ->where('status', 1)
+            ->orderByRaw('ABS(sticker_code - ?)', [$stickerCode]) // เรียงลำดับตามความใกล้เคียง
             ->take(5)
             ->get();
 
         // รายการที่ sticker_code น้อยกว่า ตามผู้สร้าง
         $lesserStickersAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('author_th', $request->author_th)
-            ->where('sticker_code', '<', $request->sticker_code) // เงื่อนไขน้อยกว่า
+            ->where('sticker_code', '<', $stickerCode)
             ->where('country', $request->country)
             ->where('status', 1)
+            ->orderByRaw('ABS(sticker_code - ?)', [$stickerCode]) // เรียงลำดับตามความใกล้เคียง
             ->take(5)
             ->get();
 
         // รายการที่ sticker_code มากกว่า
         $greaterStickers = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '>', $request->sticker_code) // เงื่อนไขมากกว่า
+            ->where('sticker_code', '>', $stickerCode)
             ->where('status', 1)
+            ->orderByRaw('ABS(sticker_code - ?)', [$stickerCode]) // เรียงลำดับตามความใกล้เคียง
             ->take(5)
             ->get();
 
         // รายการที่ sticker_code น้อยกว่า
         $lesserStickers = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '<', $request->sticker_code) // เงื่อนไขน้อยกว่า
+            ->where('sticker_code', '<', $stickerCode)
             ->where('status', 1)
+            ->orderByRaw('ABS(sticker_code - ?)', [$stickerCode]) // เรียงลำดับตามความใกล้เคียง
             ->take(5)
             ->get();
 
