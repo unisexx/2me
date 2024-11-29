@@ -24,11 +24,13 @@ Route::get('/sticker-by-author', [StickerController::class, 'getStickerByAuthor'
 Route::get('/theme-update', [ThemeController::class, 'getThemeUpdate']);
 Route::get('/theme-more', [ThemeController::class, 'getThemeMore']);
 Route::get('/theme-view/{id}', [ThemeController::class, 'getThemeView']);
+Route::get('/theme-by-author', [ThemeController::class, 'getThemeByAuthor']);
 
 // Emoji
 Route::get('/emoji-update', [EmojiController::class, 'getEmojiUpdate']);
 Route::get('/emoji-more', [EmojiController::class, 'getEmojiMore']);
 Route::get('/emoji-view/{id}', [EmojiController::class, 'getEmojiView']);
+Route::get('/emoji-by-author', [EmojiController::class, 'getEmojiByAuthor']);
 
 // SEO
 Route::get('/sticker-seo/{sticker_code}', [StickerController::class, 'getStickerSEO']);

@@ -129,4 +129,32 @@ class EmojiController extends Controller
         ]);
     }
 
+    // อิโมจิอื่นๆค้นหาตามชื่อผู้สร้าง
+    public function getEmojiByAuthor(Request $request)
+    {
+        // คิวรี่สำหรับอัปเดตธีม
+        $emojiByAuthor = Emoji::where('creator_name', $request->author)
+            ->where('id', '!=', $request->id)
+            ->where('country', $request->country)
+            ->where('status', 1)
+            ->take(10)
+            ->get()
+            ->map(function ($emoji) {
+                $createdAt = Carbon::parse($emoji->created_at);
+                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                return [
+                    'id'         => $emoji->id,
+                    'emoji_code' => $emoji->emoji_code,
+                    'title'      => $emoji->title,
+                    'country'    => $emoji->country,
+                    'price'      => convertLineCoin2Money($emoji->price),
+                    'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                    'is_new'     => $isNew,
+                ];
+            });
+
+        return response()->json($emojiByAuthor);
+    }
+
 }

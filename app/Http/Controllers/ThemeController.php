@@ -134,4 +134,34 @@ class ThemeController extends Controller
         ]);
     }
 
+    // ธีมอื่นๆค้นหาตามชื่อผู้สร้าง
+    public function getThemeByAuthor(Request $request)
+    {
+        // คิวรี่สำหรับอัปเดตธีม
+        $themeByAuthor = Theme::where('author', $request->author)
+            ->where('id', '!=', $request->id)
+            ->where('country', $request->country)
+            ->where('status', 1)
+            ->take(10)
+            ->get()
+            ->map(function ($theme) {
+                $createdAt = Carbon::parse($theme->created_at);
+                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                return [
+                    'id'         => $theme->id,
+                    'theme_code' => $theme->theme_code,
+                    'title'      => $theme->title,
+                    'country'    => $theme->country,
+                    'detail'     => $theme->detail,
+                    'price'      => convertLineCoin2Money($theme->price),
+                    'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                    'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                    'is_new'     => $isNew,
+                ];
+            });
+
+        return response()->json($themeByAuthor);
+    }
+
 }
