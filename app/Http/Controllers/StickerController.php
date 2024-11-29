@@ -160,13 +160,13 @@ class StickerController extends Controller
         // }
 
         // รายการที่ sticker_code มากกว่า $request->sticker_code
-        $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('sticker_code', '>', $request->sticker_code)
-            ->where('category', $request->category)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->take(5)
-            ->get();
+        // $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        //     ->where('sticker_code', '>', $request->sticker_code)
+        //     ->where('category', $request->category)
+        //     ->where('country', $request->country)
+        //     ->where('status', 1)
+        //     ->take(5)
+        //     ->get();
 
         // Debug ผลลัพธ์
         // if ($stickerOther->isEmpty()) {
@@ -174,7 +174,7 @@ class StickerController extends Controller
         // }
 
         // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
-        $mergedStickers = $stickerAuthor->concat($stickerOther);
+        // $mergedStickers = $stickerAuthor->concat($stickerOther);
 
         // Debug ผลลัพธ์รวม
         // if ($mergedStickers->isEmpty()) {
@@ -182,7 +182,7 @@ class StickerController extends Controller
         // }
 
         // แปลงข้อมูล
-        $stickerAuthor = $mergedStickers->map(function ($sticker) {
+        $stickerAuthor = $stickerAuthor->map(function ($sticker) {
             $createdAt = Carbon::parse($sticker->created_at);
             $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
