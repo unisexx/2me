@@ -155,9 +155,9 @@ class StickerController extends Controller
             ->get();
 
         // Debug ผลลัพธ์
-        if ($stickerAuthor->isEmpty()) {
-            dd("No data found in stickerAuthor query");
-        }
+        // if ($stickerAuthor->isEmpty()) {
+        //     dd("No data found in stickerAuthor query");
+        // }
 
         // รายการที่ sticker_code มากกว่า $request->sticker_code
         $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
@@ -169,17 +169,17 @@ class StickerController extends Controller
             ->get();
 
         // Debug ผลลัพธ์
-        if ($stickerOther->isEmpty()) {
-            dd("No data found in stickerOther query");
-        }
+        // if ($stickerOther->isEmpty()) {
+        //     dd("No data found in stickerOther query");
+        // }
 
         // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
         $mergedStickers = $stickerAuthor->concat($stickerOther);
 
         // Debug ผลลัพธ์รวม
-        if ($mergedStickers->isEmpty()) {
-            dd("No data found in merged stickers");
-        }
+        // if ($mergedStickers->isEmpty()) {
+        //     dd("No data found in merged stickers");
+        // }
 
         // แปลงข้อมูล
         $stickerAuthor = $mergedStickers->map(function ($sticker) {
