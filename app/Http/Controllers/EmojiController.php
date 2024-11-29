@@ -137,7 +137,8 @@ class EmojiController extends Controller
             ->where('id', '!=', $request->id)
             ->where('country', $request->country)
             ->where('status', 1)
-            ->take(10)
+            ->inRandomOrder()
+            ->take(8)
             ->get()
             ->map(function ($emoji) {
                 $createdAt = Carbon::parse($emoji->created_at);
