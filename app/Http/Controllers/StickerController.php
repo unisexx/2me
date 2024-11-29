@@ -145,36 +145,13 @@ class StickerController extends Controller
     public function getStickerByAuthor(Request $request)
     {
         // คิวรี่สำหรับอัปเดตสติกเกอร์
-        $stickerAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('author_th', $request->author_th)
-            ->where('sticker_code', '!=', $request->sticker_code)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->inRandomOrder()
-            ->take(10)
-            ->get()
-            ->map(function ($sticker) {
-                $createdAt = Carbon::parse($sticker->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
-
-                return [
-                    'sticker_code' => $sticker->sticker_code,
-                    'title_th'     => $sticker->title_th,
-                    'country'      => $sticker->country,
-                    'price'        => convertLineCoin2Money($sticker->price),
-                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
-                    'is_new'       => $isNew,
-                ];
-            });
-
-        // // คิวรี่สำหรับสุ่มสติกเกอร์
-        // $stickerRandom = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        // $stickerAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        //     ->where('author_th', $request->author_th)
         //     ->where('sticker_code', '!=', $request->sticker_code)
         //     ->where('country', $request->country)
         //     ->where('status', 1)
-        //     ->orderByRaw('RAND()')
-        //     ->take(6)
+        //     ->inRandomOrder()
+        //     ->take(10)
         //     ->get()
         //     ->map(function ($sticker) {
         //         $createdAt = Carbon::parse($sticker->created_at);
@@ -191,8 +168,40 @@ class StickerController extends Controller
         //         ];
         //     });
 
-        // // แปลงข้อมูลให้เป็นคอลเลกชันก่อนรวม
-        // $result = collect($stickerUpdate)->merge(collect($stickerRandom));
+        // รายการที่ sticker_code มากกว่า $request->sticker_code
+        $greaterStickers = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+            ->where('author_th', $request->author_th)
+            ->where('sticker_code', '>', $request->sticker_code) // เงื่อนไขมากกว่า
+            ->where('country', $request->country)
+            ->where('status', 1)
+            ->take(10)
+            ->get();
+
+        // รายการที่ sticker_code น้อยกว่า $request->sticker_code
+        $lesserStickers = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+            ->where('author_th', $request->author_th)
+            ->where('sticker_code', '<', $request->sticker_code) // เงื่อนไขน้อยกว่า
+            ->where('country', $request->country)
+            ->where('status', 1)
+            ->take(10)
+            ->get();
+
+        // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
+        $stickerAuthor = $greaterStickers->merge($lesserStickers)
+            ->map(function ($sticker) {
+                $createdAt = Carbon::parse($sticker->created_at);
+                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                return [
+                    'sticker_code' => $sticker->sticker_code,
+                    'title_th'     => $sticker->title_th,
+                    'country'      => $sticker->country,
+                    'price'        => convertLineCoin2Money($sticker->price),
+                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                    'is_new'       => $isNew,
+                ];
+            });
 
         return response()->json($stickerAuthor);
     }
