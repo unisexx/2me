@@ -151,7 +151,7 @@ class StickerController extends Controller
             ->where('country', $request->country)
             ->where('status', 1)
             ->inRandomOrder()
-            ->take(10)
+            ->take(8)
             ->get();
 
         // Debug ผลลัพธ์
