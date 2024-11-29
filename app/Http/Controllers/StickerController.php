@@ -187,7 +187,7 @@ class StickerController extends Controller
             ->get();
 
         // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
-        $stickerAuthor = $greaterStickers->merge($lesserStickers)
+        $stickerAuthor = $greaterStickers->concat($lesserStickers)
             ->map(function ($sticker) {
                 $createdAt = Carbon::parse($sticker->created_at);
                 $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
