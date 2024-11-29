@@ -133,7 +133,7 @@ class EmojiController extends Controller
     public function getEmojiByAuthor(Request $request)
     {
         // คิวรี่สำหรับอัปเดตธีม
-        $emojiByAuthor = Emoji::where('creator_name', $request->author)
+        $emojiByAuthor = Emoji::where('creator_name', $request->creator_name)
             ->where('id', '!=', $request->id)
             ->where('country', $request->country)
             ->where('status', 1)
