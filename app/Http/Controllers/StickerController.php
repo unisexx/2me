@@ -176,7 +176,21 @@ class StickerController extends Controller
             ->where('status', 1)
             ->inRandomOrder()
             ->take(5)
-            ->get();
+            ->get()
+            ->map(function ($sticker) {
+                $createdAt = Carbon::parse($sticker->created_at);
+                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                return [
+                    'sticker_code' => $sticker->sticker_code,
+                    'title_th'     => $sticker->title_th,
+                    'country'      => $sticker->country,
+                    'price'        => convertLineCoin2Money($sticker->price),
+                    'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                    'is_new'       => $isNew,
+                ];
+            });
 
         // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
         $stickerAuthor = $stickerAuthor->concat($stickerOther)
