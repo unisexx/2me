@@ -100,24 +100,34 @@ class StickerController extends Controller
     // หน้าวิวสติกเกอร์
     public function getStickerView($sticker_code)
     {
-        $sticker = Sticker::where('sticker_code', $sticker_code)->first();
+        // ใช้ Cache เป็นเวลา 1 วัน (1440 นาที)
+        $cacheKey = "sticker_view_{$sticker_code}";
 
-        if (!$sticker) {
+        $stickerData = Cache::remember($cacheKey, 1440, function () use ($sticker_code) {
+            $sticker = Sticker::where('sticker_code', $sticker_code)->first();
+
+            if (!$sticker) {
+                return null; // หากไม่มีข้อมูล จะเก็บค่า null ใน Cache
+            }
+
+            $createdAt = Carbon::parse($sticker->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+            // แปลง $sticker เป็น array และเพิ่มข้อมูลเพิ่มเติม
+            return array_merge(
+                $sticker->toArray(),
+                [
+                    'img_url' => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                    'price'   => convertLineCoin2Money($sticker->price),
+                    'is_new'  => $isNew,
+                ]
+            );
+        });
+
+        // หากไม่มีข้อมูลใน Cache (เช่น Sticker ไม่พบ) ให้ส่ง HTTP 404 กลับ
+        if (!$stickerData) {
             return response()->json(['message' => 'Sticker not found'], 404);
         }
-
-        $createdAt = Carbon::parse($sticker->created_at);
-        $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
-
-        // แปลง $sticker เป็น array และเพิ่มข้อมูลเพิ่มเติม
-        $stickerData = array_merge(
-            $sticker->toArray(),
-            [
-                'img_url' => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                'price'   => convertLineCoin2Money($sticker->price),
-                'is_new'  => $isNew,
-            ]
-        );
 
         return response()->json($stickerData);
     }
@@ -125,19 +135,31 @@ class StickerController extends Controller
     // seo หน้าวิวสติกเกอร์
     public function getStickerSEO($sticker_code)
     {
-        $sticker = Sticker::where('sticker_code', $sticker_code)->first();
+        // ใช้ Cache เป็นเวลา 1 วัน (1440 นาที)
+        $cacheKey = "sticker_seo_{$sticker_code}";
 
-        if (!$sticker) {
+        $seoData = Cache::remember($cacheKey, 1440, function () use ($sticker_code) {
+            $sticker = Sticker::where('sticker_code', $sticker_code)->first();
+
+            if (!$sticker) {
+                return null; // หากไม่มี Sticker ให้เก็บค่า null ใน Cache
+            }
+
+            return [
+                'title'       => $sticker->title_th . ' - line2me',
+                'description' => 'ซื้อสติกเกอร์ไลน์ ' . $sticker->title_th . ' ในราคา ' . convertLineCoin2Money($sticker->price) . ' บาท พร้อมส่งฟรี',
+                'keywords'    => 'สติกเกอร์ไลน์, ' . $sticker->title_th . ', line2me sticker shop',
+                'image'       => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                'url'         => url('/sticker/' . $sticker->sticker_code),
+            ];
+        });
+
+        // หากไม่มีข้อมูล SEO ใน Cache ให้ส่ง HTTP 404
+        if (!$seoData) {
             return response()->json(['message' => 'Sticker not found'], 404);
         }
 
-        return response()->json([
-            'title'       => $sticker->title_th . ' - line2me',
-            'description' => 'ซื้อสติกเกอร์ไลน์ ' . $sticker->title_th . ' ในราคา ' . convertLineCoin2Money($sticker->price) . ' บาท พร้อมส่งฟรี',
-            'keywords'    => 'สติกเกอร์ไลน์, ' . $sticker->title_th . ', line2me sticker shop',
-            'image'       => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-            'url'         => url('/sticker/' . $sticker->sticker_code),
-        ]);
+        return response()->json($seoData);
     }
 
     // สติกเกอร์อื่นๆค้นหาตามชื่อผู้สร้าง

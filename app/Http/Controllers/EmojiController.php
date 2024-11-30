@@ -89,42 +89,64 @@ class EmojiController extends Controller
 
     public function getEmojiView($id)
     {
-        $emoji = Emoji::find($id);
+        // ใช้ Cache เป็นเวลา 1 วัน (1440 นาที)
+        $cacheKey = "emoji_view_{$id}";
 
-        if (!$emoji) {
+        $emojiData = Cache::remember($cacheKey, 1440, function () use ($id) {
+            $emoji = Emoji::find($id);
+
+            if (!$emoji) {
+                return null; // หากไม่มี Emoji ให้คืนค่า null ใน Cache
+            }
+
+            $createdAt = Carbon::parse($emoji->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+            // แปลง $emoji เป็น array และเพิ่มข้อมูลเพิ่มเติม
+            return array_merge(
+                $emoji->toArray(),
+                [
+                    'price'  => convertLineCoin2Money($emoji->price),
+                    'is_new' => $isNew,
+                ]
+            );
+        });
+
+        // หากไม่มี Emoji ใน Cache ให้ส่ง HTTP 404
+        if (!$emojiData) {
             return response()->json(['message' => 'Emoji not found'], 404);
         }
-
-        $createdAt = Carbon::parse($emoji->created_at);
-        $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
-
-        // แปลง $emoji เป็น array และเพิ่มข้อมูลเพิ่มเติม
-        $emojiData = array_merge(
-            $emoji->toArray(),
-            [
-                'price'  => convertLineCoin2Money($emoji->price),
-                'is_new' => $isNew,
-            ]
-        );
 
         return response()->json($emojiData);
     }
 
     public function getEmojiSEO($id)
     {
-        $emoji = Emoji::find($id);
+        // ใช้ Cache เป็นเวลา 1 วัน (1440 นาที)
+        $cacheKey = "emoji_seo_{$id}";
 
-        if (!$emoji) {
+        $seoData = Cache::remember($cacheKey, 1440, function () use ($id) {
+            $emoji = Emoji::find($id);
+
+            if (!$emoji) {
+                return null; // หากไม่มี Emoji ให้เก็บค่า null ใน Cache
+            }
+
+            return [
+                'title'       => $emoji->title . ' - line2me',
+                'description' => 'ซื้ออิโมจิไลน์ ' . $emoji->title . ' ในราคา ' . convertLineCoin2Money($emoji->price) . ' บาท พร้อมส่งฟรี',
+                'keywords'    => 'อิโมจิไลน์, ' . $emoji->title . ', emoji shop',
+                'image'       => 'https://stickershop.line-scdn.net/sticonshop/v1/product/' . $emoji->emoji_code . '/iphone/main.png',
+                'url'         => url('/emoji/' . $emoji->id),
+            ];
+        });
+
+        // หากไม่มีข้อมูล SEO ใน Cache ให้ส่ง HTTP 404
+        if (!$seoData) {
             return response()->json(['message' => 'Emoji not found'], 404);
         }
 
-        return response()->json([
-            'title'       => $emoji->title . ' - line2me',
-            'description' => 'ซื้ออิโมจิไลน์ ' . $emoji->title . ' ในราคา ' . convertLineCoin2Money($emoji->price) . ' บาท พร้อมส่งฟรี',
-            'keywords'    => 'อิโมจิไลน์, ' . $emoji->title . ', emoji shop',
-            'image'       => 'https://stickershop.line-scdn.net/sticonshop/v1/product/' . $emoji->emoji_code . '/iphone/main.png',
-            'url'         => url('/emoji/' . $emoji->id),
-        ]);
+        return response()->json($seoData);
     }
 
     // อิโมจิอื่นๆค้นหาตามชื่อผู้สร้าง
