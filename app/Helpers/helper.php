@@ -92,7 +92,7 @@ if (!function_exists('recordProductView')) {
         // อัพเดทยอดวิวในตารางที่เกี่ยวข้อง
         switch ($type) {
             case 'sticker':
-                Sticker::find($id)->update(['views_last_3_days' => $viewsCount]);
+                Sticker::where('sticker_code', $id)->first()->update(['views_last_3_days' => $viewsCount]);
                 break;
             case 'theme':
                 Theme::find($id)->update(['views_last_3_days' => $viewsCount]);
