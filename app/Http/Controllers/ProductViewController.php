@@ -8,18 +8,15 @@ class ProductViewController extends Controller
 {
     public function recordView(Request $request)
     {
-        // ตรวจสอบข้อมูลที่รับเข้ามา
         $validatedData = $request->validate([
-            'type' => 'required|string|in:sticker,theme,emoji', // ประเภทต้องเป็น sticker, theme, หรือ emoji
-            'id' => 'required|integer',                         // ID ต้องเป็นตัวเลข
+            'type'       => 'required|string|in:sticker,theme,emoji',
+            'id'         => 'required|integer',
+            'ip_address' => 'nullable|ip', // ตรวจสอบว่าค่า ip_address เป็น IP address ที่ถูกต้อง
         ]);
 
-        // เรียกใช้ฟังก์ชัน recordProductView
-        recordProductView($validatedData['type'], $validatedData['id']);
+        recordProductView($validatedData['type'], $validatedData['id'], $validatedData['ip_address'] ?? null);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'View recorded successfully.',
-        ]);
+        return response()->json(['success' => true, 'message' => 'View recorded successfully']);
     }
+
 }

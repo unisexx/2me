@@ -56,7 +56,7 @@ if (!function_exists('generateThemeUrlDetail')) {
 
 // อัพเดท views_last_3_days
 if (!function_exists('recordProductView')) {
-    function recordProductView($type, $id)
+    function recordProductView($type, $id, $clientIp = null)
     {
         // ตรวจสอบ User-Agent ว่าเป็น Bot หรือไม่
         $userAgent = request()->header('User-Agent');
@@ -64,10 +64,10 @@ if (!function_exists('recordProductView')) {
             return; // ถ้าเป็น Bot ให้หยุดทำงาน
         }
 
-        // หาดูไอพีจริงของ Client
-        $ipAddress = request()->header('X-Forwarded-For')
-            ? explode(',', request()->header('X-Forwarded-For'))[0]
-            : request()->ip();
+        // ใช้ IP ที่รับจาก API หากมี ไม่เช่นนั้นใช้ IP จากคำขอปัจจุบัน
+        $ipAddress = $clientIp ?? (request()->header('X-Forwarded-For')
+                ? explode(',', request()->header('X-Forwarded-For'))[0]
+                : request()->ip());
 
         $today = Carbon::today();
 
