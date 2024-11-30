@@ -58,8 +58,12 @@ if (!function_exists('generateThemeUrlDetail')) {
 if (!function_exists('recordProductView')) {
     function recordProductView($type, $id)
     {
-        $ipAddress = request()->ip();
-        $today     = Carbon::today();
+        // หาดูไอพีจริงของ Client
+        $ipAddress = request()->header('X-Forwarded-For')
+            ? explode(',', request()->header('X-Forwarded-For'))[0]
+            : request()->ip();
+
+        $today = Carbon::today();
 
         // ใช้ insertOrIgnore เพื่อบันทึกข้อมูลโดยป้องกันการบันทึกซ้ำ
         DB::table('product_views')->insertOrIgnore([
