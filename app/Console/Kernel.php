@@ -13,7 +13,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Add the scheduled command
-        $schedule->command('product-views:delete-old')->dailyAt('00:00');
+        $schedule->command('product-views:delete-old')
+            ->dailyAt('00:00')                                               // กำหนดเวลารันทุกวันเวลาเที่ยงคืน
+            ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log')) // บันทึกผลลัพธ์ลงไฟล์
+            ->runInBackground();                                             // รันใน background
     }
 
     /**
