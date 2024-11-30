@@ -5,32 +5,36 @@ namespace App\Http\Controllers;
 use App\Models\Theme;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ThemeController extends Controller
 {
     public function getThemeUpdate()
     {
-        $themeUpdate = Theme::where('category', 'official')
-            ->where('status', 1)
-            ->where('created_at', '>', now()->subDays(7)->endOfDay())
-            ->orderBy('id', 'desc')
-            ->get()
-            ->map(function ($theme) {
-                $createdAt = Carbon::parse($theme->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+            return Theme::where('category', 'official')
+                ->where('status', 1)
+                ->where('created_at', '>', now()->subDays(7)->endOfDay())
+                ->orderBy('id', 'desc')
+                ->get()
+                ->map(function ($theme) {
+                    $createdAt = Carbon::parse($theme->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
-                return [
-                    'id'         => $theme->id,
-                    'theme_code' => $theme->theme_code,
-                    'title'      => $theme->title,
-                    'country'    => $theme->country,
-                    'detail'     => $theme->detail,
-                    'price'      => convertLineCoin2Money($theme->price),
-                    'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
-                    'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
-                    'is_new'     => $isNew,
-                ];
-            });
+                    return [
+                        'id'         => $theme->id,
+                        'theme_code' => $theme->theme_code,
+                        'title'      => $theme->title,
+                        'country'    => $theme->country,
+                        'detail'     => $theme->detail,
+                        'price'      => convertLineCoin2Money($theme->price),
+                        'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                        'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
 
         return response()->json($themeUpdate);
     }

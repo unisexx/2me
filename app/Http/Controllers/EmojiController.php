@@ -5,29 +5,33 @@ namespace App\Http\Controllers;
 use App\Models\Emoji;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class EmojiController extends Controller
 {
     public function getEmojiUpdate()
     {
-        $emojiUpdate = Emoji::where('category', 'official')
-            ->where('status', 1)
-            ->where('created_at', '>', now()->subDays(7)->endOfDay())
-            ->orderBy('id', 'desc')->get()
-            ->map(function ($emoji) {
-                $createdAt = Carbon::parse($emoji->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+            return Emoji::where('category', 'official')
+                ->where('status', 1)
+                ->where('created_at', '>', now()->subDays(7)->endOfDay())
+                ->orderBy('id', 'desc')->get()
+                ->map(function ($emoji) {
+                    $createdAt = Carbon::parse($emoji->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
-                return [
-                    'id'         => $emoji->id,
-                    'emoji_code' => $emoji->emoji_code,
-                    'title'      => $emoji->title,
-                    'country'    => $emoji->country,
-                    'price'      => convertLineCoin2Money($emoji->price),
-                    'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
-                    'is_new'     => $isNew,
-                ];
-            });
+                    return [
+                        'id'         => $emoji->id,
+                        'emoji_code' => $emoji->emoji_code,
+                        'title'      => $emoji->title,
+                        'country'    => $emoji->country,
+                        'price'      => convertLineCoin2Money($emoji->price),
+                        'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
 
         return response()->json($emojiUpdate);
     }
