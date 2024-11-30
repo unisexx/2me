@@ -58,6 +58,12 @@ if (!function_exists('generateThemeUrlDetail')) {
 if (!function_exists('recordProductView')) {
     function recordProductView($type, $id)
     {
+        // ตรวจสอบ User-Agent ว่าเป็น Bot หรือไม่
+        $userAgent = request()->header('User-Agent');
+        if (isBot($userAgent)) {
+            return; // ถ้าเป็น Bot ให้หยุดทำงาน
+        }
+
         // หาดูไอพีจริงของ Client
         $ipAddress = request()->header('X-Forwarded-For')
             ? explode(',', request()->header('X-Forwarded-For'))[0]
@@ -95,6 +101,30 @@ if (!function_exists('recordProductView')) {
                 Emoji::find($id)->update(['views_last_3_days' => $viewsCount]);
                 break;
         }
+    }
+}
+
+if (!function_exists('isBot')) {
+    /**
+     * ตรวจสอบว่า User-Agent เป็น Bot หรือไม่
+     */
+    function isBot($userAgent)
+    {
+        $botKeywords = [
+            'bot', 'crawl', 'spider', 'slurp', 'search', 'yandex', 'baidu', 'bing', 'duckduckgo', 'google', 'mediapartners', 'facebookexternalhit', 'linkedinbot', 'twitterbot', 'facebot',
+        ];
+
+        if (!$userAgent) {
+            return false; // หากไม่มี User-Agent ให้ถือว่าไม่ใช่ Bot
+        }
+
+        foreach ($botKeywords as $botKeyword) {
+            if (stripos($userAgent, $botKeyword) !== false) {
+                return true; // ถ้าพบคำที่ระบุว่าเป็น Bot ใน User-Agent
+            }
+        }
+
+        return false; // ไม่พบว่าเป็น Bot
     }
 }
 

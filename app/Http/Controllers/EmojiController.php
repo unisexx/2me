@@ -103,12 +103,6 @@ class EmojiController extends Controller
             ]
         );
 
-        // เก็บสถิติ views_last_3_days
-        // ใช้ register_shutdown_function เพื่อบันทึกข้อมูลหลังจาก response
-        register_shutdown_function(function () use ($emoji) {
-            recordProductView('emoji', $emoji->id);
-        });
-
         return response()->json($emojiData);
     }
 

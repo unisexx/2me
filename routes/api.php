@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmojiController;
+use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\PromoteController;
 use App\Http\Controllers\StickerController;
 use App\Http\Controllers\ThemeController;
@@ -36,3 +37,6 @@ Route::get('/emoji-by-author', [EmojiController::class, 'getEmojiByAuthor']);
 Route::get('/sticker-seo/{sticker_code}', [StickerController::class, 'getStickerSEO']);
 Route::get('/theme-seo/{id}', [ThemeController::class, 'getThemeSEO']);
 Route::get('/emoji-seo/{id}', [EmojiController::class, 'getEmojiSEO']);
+
+// ProductView Log
+Route::post('/record-product-view', [ProductViewController::class, 'recordView']);
