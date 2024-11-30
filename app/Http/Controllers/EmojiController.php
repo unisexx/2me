@@ -74,6 +74,9 @@ class EmojiController extends Controller
 
         // แปลงข้อมูลเพิ่มเติม
         $emojis->getCollection()->transform(function ($emoji) {
+            $createdAt = Carbon::parse($emoji->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
             return [
                 'id'         => $emoji->id,
                 'emoji_code' => $emoji->emoji_code,
@@ -81,6 +84,7 @@ class EmojiController extends Controller
                 'country'    => $emoji->country,
                 'price'      => convertLineCoin2Money($emoji->price),
                 'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                'is_new'     => $isNew,
             ];
         });
 
