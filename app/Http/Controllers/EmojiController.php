@@ -13,10 +13,12 @@ class EmojiController extends Controller
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
         $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
-            return Emoji::where('category', 'official')
+            return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+                ->where('category', 'official')
                 ->where('status', 1)
                 ->where('created_at', '>', now()->subDays(7)->endOfDay())
-                ->orderBy('id', 'desc')->get()
+                ->orderBy('id', 'desc')
+                ->get()
                 ->map(function ($emoji) {
                     $createdAt = Carbon::parse($emoji->created_at);
                     $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
@@ -46,7 +48,7 @@ class EmojiController extends Controller
         $order    = $request->input('order', 'new'); // ค่าเริ่มต้นคือ 'new'
 
         // สร้าง Query Builder
-        $query = Emoji::where('status', 1);
+        $query = Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')->where('status', 1);
 
         // กรองตาม category
         if (!empty($category)) {
@@ -157,7 +159,8 @@ class EmojiController extends Controller
     public function getEmojiByAuthor(Request $request)
     {
         // คิวรี่สำหรับอัปเดตธีม
-        $emojiByAuthor = Emoji::where('creator_name', $request->creator_name)
+        $emojiByAuthor = Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+            ->where('creator_name', $request->creator_name)
             ->where('id', '!=', $request->id)
             ->where('country', $request->country)
             ->where('status', 1)

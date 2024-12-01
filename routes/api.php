@@ -3,6 +3,7 @@
 use App\Http\Controllers\EmojiController;
 use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\PromoteController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\StickerController;
 use App\Http\Controllers\ThemeController;
 use Illuminate\Http\Request;
@@ -40,3 +41,6 @@ Route::get('/emoji-seo/{id}', [EmojiController::class, 'getEmojiSEO']);
 
 // ProductView Log
 Route::post('/record-product-view', [ProductViewController::class, 'recordView']);
+
+// Search
+Route::get('/search', [SearchController::class, 'getSearch']);

@@ -13,7 +13,8 @@ class ThemeController extends Controller
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
         $themeUpdate = Cache::remember('theme_update', 3600, function () {
-            return Theme::where('category', 'official')
+            return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+                ->where('category', 'official')
                 ->where('status', 1)
                 ->where('created_at', '>', now()->subDays(7)->endOfDay())
                 ->orderBy('id', 'desc')
@@ -27,7 +28,6 @@ class ThemeController extends Controller
                         'theme_code' => $theme->theme_code,
                         'title'      => $theme->title,
                         'country'    => $theme->country,
-                        'detail'     => $theme->detail,
                         'price'      => convertLineCoin2Money($theme->price),
                         'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
                         'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
@@ -49,7 +49,7 @@ class ThemeController extends Controller
         $order    = $request->input('order', 'new'); // ค่าเริ่มต้นคือ 'new'
 
         // สร้าง Query Builder
-        $query = Theme::where('status', 1);
+        $query = Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')->where('status', 1);
 
         // กรองตาม category
         if (!empty($category)) {
@@ -163,7 +163,8 @@ class ThemeController extends Controller
     public function getThemeByAuthor(Request $request)
     {
         // คิวรี่สำหรับอัปเดตธีม
-        $themeByAuthor = Theme::where('author', $request->author)
+        $themeByAuthor = Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+            ->where('author', $request->author)
             ->where('id', '!=', $request->id)
             ->where('country', $request->country)
             ->where('status', 1)
