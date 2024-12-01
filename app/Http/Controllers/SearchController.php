@@ -24,6 +24,7 @@ class SearchController extends Controller
         $stickers = DB::table('stickers')
             ->select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->whereRaw("MATCH(title_th, detail) AGAINST (? IN BOOLEAN MODE)", ['"' . $searchQuery . '"'])
+            ->where('status', 1)
             ->orderBy('views_last_3_days', 'desc')
             ->take(100)
             ->get()
@@ -45,6 +46,7 @@ class SearchController extends Controller
         $themes = DB::table('themes')
             ->select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at') // กำหนดฟิลด์ที่ต้องการ
             ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", ['"' . $searchQuery . '"'])
+            ->where('status', 1)
             ->orderBy('views_last_3_days', 'desc')
             ->take(100)
             ->get()
@@ -67,6 +69,7 @@ class SearchController extends Controller
         $emojis = DB::table('emojis')
             ->select('id', 'emoji_code', 'title', 'country', 'price', 'created_at') // กำหนดฟิลด์ที่ต้องการ
             ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", ['"' . $searchQuery . '"'])
+            ->where('status', 1)
             ->orderBy('views_last_3_days', 'desc')
             ->take(100)
             ->get()
