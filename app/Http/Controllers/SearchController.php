@@ -35,7 +35,6 @@ class SearchController extends Controller
                     'country'      => $sticker->country,
                     'price'        => convertLineCoin2Money($sticker->price),
                     'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                    'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
                     'is_new'       => $isNew, // เพิ่มตัวแปร is_new
                 ];
             });
@@ -43,7 +42,7 @@ class SearchController extends Controller
         // ค้นหาธีมด้วย Full-Text Search
         $themes = DB::table('themes')
             ->select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at') // กำหนดฟิลด์ที่ต้องการ
-            ->whereRaw("MATCH(title_th, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+            ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
             ->get()
             ->map(function ($theme) {
                 $createdAt = Carbon::parse($theme->created_at);
@@ -56,7 +55,6 @@ class SearchController extends Controller
                     'country'    => $theme->country,
                     'price'      => convertLineCoin2Money($theme->price),
                     'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
-                    'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
                     'is_new'     => $isNew,
                 ];
             });
@@ -64,7 +62,7 @@ class SearchController extends Controller
         // ค้นหาอิโมจิด้วย Full-Text Search
         $emojis = DB::table('emojis')
             ->select('id', 'emoji_code', 'title', 'country', 'price', 'created_at') // กำหนดฟิลด์ที่ต้องการ
-            ->whereRaw("MATCH(title_th, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+            ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
             ->get()
             ->map(function ($emoji) {
                 $createdAt = Carbon::parse($emoji->created_at);
@@ -76,7 +74,6 @@ class SearchController extends Controller
                     'title'      => $emoji->title,
                     'country'    => $emoji->country,
                     'price'      => convertLineCoin2Money($emoji->price),
-                    'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
                     'is_new'     => $isNew,
                 ];
             });
