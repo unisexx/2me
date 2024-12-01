@@ -23,7 +23,8 @@ class SearchController extends Controller
         // ค้นหาสติกเกอร์ด้วย Full-Text Search
         $stickers = DB::table('stickers')
             ->select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->whereRaw("MATCH(title_th, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+        // ->whereRaw("MATCH(title_th, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+            ->where('title_th', 'LIKE', $searchQuery . '%')
             ->take(20)
             ->get()
             ->map(function ($sticker) {
@@ -43,7 +44,8 @@ class SearchController extends Controller
         // ค้นหาธีมด้วย Full-Text Search
         $themes = DB::table('themes')
             ->select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at') // กำหนดฟิลด์ที่ต้องการ
-            ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+                                                                                           // ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+            ->where('title', 'LIKE', $searchQuery . '%')
             ->take(20)
             ->get()
             ->map(function ($theme) {
@@ -64,7 +66,8 @@ class SearchController extends Controller
         // ค้นหาอิโมจิด้วย Full-Text Search
         $emojis = DB::table('emojis')
             ->select('id', 'emoji_code', 'title', 'country', 'price', 'created_at') // กำหนดฟิลด์ที่ต้องการ
-            ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+                                                                                // ->whereRaw("MATCH(title, detail) AGAINST (? IN BOOLEAN MODE)", [$searchQuery . '*'])
+            ->where('title', 'LIKE', $searchQuery . '%')
             ->take(20)
             ->get()
             ->map(function ($emoji) {
