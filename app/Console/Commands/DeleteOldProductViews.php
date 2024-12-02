@@ -28,6 +28,8 @@ class DeleteOldProductViews extends Command
      */
     public function handle()
     {
+        $this->info('Deleting old product views...');
+
         // SQL Query to delete records older than 3 days
         $deletedRows = DB::table('product_views')
             ->where('created_at', '<', now()->subDays(3))
@@ -35,6 +37,8 @@ class DeleteOldProductViews extends Command
 
         // Log the result
         $this->info("Deleted {$deletedRows} old product views.");
+        // โค้ดการลบข้อมูล
+        $this->info('Old product views deleted successfully.');
         return 0;
     }
 }
