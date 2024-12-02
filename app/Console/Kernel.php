@@ -12,12 +12,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->call(function () {
+            \Log::info('Scheduler Test: Task is running.');
+        })->everyMinute();
+
         // Add the scheduled command
         $schedule->command('product-views:delete-old')
-                                                                         // ->dailyAt('00:00')
-            ->everyMinute()                                                  // ตั้งให้รันทุกนาที                                         // กำหนดเวลารันทุกวันเวลาเที่ยงคืน
-            ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log')) // บันทึกผลลัพธ์ลงไฟล์
-            ->runInBackground();                                             // รันใน background
+            ->dailyAt('00:00')
+        // ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log'))
+            ->runInBackground();
     }
 
     /**
