@@ -28,8 +28,6 @@ class DeleteOldProductViews extends Command
      */
     public function handle()
     {
-        $this->info('Deleting old product views...');
-
         // SQL Query to delete records older than 3 days
         $deletedRows = DB::table('product_views')
             ->where('created_at', '<', now()->subDays(3))
