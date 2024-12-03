@@ -18,7 +18,8 @@ class Kernel extends ConsoleKernel
 
         // Add the scheduled command
         $schedule->command('product-views:delete-old')
-            ->dailyAt('00:00')
+            ->everyMinute()
+        // ->dailyAt('00:00')
         // ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log'))
             ->runInBackground();
     }
