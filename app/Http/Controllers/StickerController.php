@@ -186,7 +186,7 @@ class StickerController extends Controller
             ->get();
 
         // รวมผลลัพธ์
-        $stickers = $stickersBefore->merge($stickersAfter);
+        $stickers = $stickersBefore->concat($stickersAfter);
 
         // แปลงข้อมูล
         $stickerAuthor = $stickers->map(function ($sticker) {
