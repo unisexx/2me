@@ -18,8 +18,8 @@ class StickerController extends Controller
                 ->where('category', 'official')
                 ->where('status', 1)
                 ->where('created_at', '>', now()->subDays(7)->endOfDay())
-            // ->orderByRaw("FIELD(country,'th','jp','tw','id') asc")
-                ->orderBy('sticker_code', 'desc')
+                ->orderByRaw("FIELD(country,'th','jp','tw','id') asc")
+            // ->orderBy('sticker_code', 'desc')
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
