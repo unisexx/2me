@@ -165,31 +165,45 @@ class StickerController extends Controller
     // สติกเกอร์อื่นๆค้นหาตามชื่อผู้สร้าง
     public function getStickerByAuthor(Request $request)
     {
-        // ดึง 4 รายการที่ sticker_code น้อยกว่า $request->sticker_code
-        $stickersBefore = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        // คิวรี่สำหรับอัปเดตสติกเกอร์
+        $stickerAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
             ->where('author_th', $request->author_th)
-            ->where('sticker_code', '<', $request->sticker_code)
+            ->where('sticker_code', '!=', $request->sticker_code)
             ->where('country', $request->country)
             ->where('status', 1)
-            ->orderBy('sticker_code', 'desc') // เรียงจากมากไปน้อย
-            ->take(4)
+            ->inRandomOrder()
+            ->take(8)
             ->get();
 
-        // ดึง 4 รายการที่ sticker_code มากกว่า $request->sticker_code
-        $stickersAfter = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('author_th', $request->author_th)
-            ->where('sticker_code', '>', $request->sticker_code)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->orderBy('sticker_code', 'asc') // เรียงจากน้อยไปมาก
-            ->take(4)
-            ->get();
+        // Debug ผลลัพธ์
+        // if ($stickerAuthor->isEmpty()) {
+        //     dd("No data found in stickerAuthor query");
+        // }
 
-        // รวมผลลัพธ์
-        $stickers = $stickersBefore->concat($stickersAfter);
+        // รายการที่ sticker_code มากกว่า $request->sticker_code
+        // $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+        //     ->where('sticker_code', '>', $request->sticker_code)
+        //     ->where('category', $request->category)
+        //     ->where('country', $request->country)
+        //     ->where('status', 1)
+        //     ->take(5)
+        //     ->get();
+
+        // Debug ผลลัพธ์
+        // if ($stickerOther->isEmpty()) {
+        //     dd("No data found in stickerOther query");
+        // }
+
+        // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
+        // $mergedStickers = $stickerAuthor->concat($stickerOther);
+
+        // Debug ผลลัพธ์รวม
+        // if ($mergedStickers->isEmpty()) {
+        //     dd("No data found in merged stickers");
+        // }
 
         // แปลงข้อมูล
-        $stickerAuthor = $stickers->map(function ($sticker) {
+        $stickerAuthor = $stickerAuthor->map(function ($sticker) {
             $createdAt = Carbon::parse($sticker->created_at);
             $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
@@ -206,4 +220,5 @@ class StickerController extends Controller
 
         return response()->json($stickerAuthor);
     }
+
 }
