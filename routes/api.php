@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EmojiController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductViewController;
 use App\Http\Controllers\PromoteController;
 use App\Http\Controllers\SearchController;
@@ -44,3 +45,6 @@ Route::post('/record-product-view', [ProductViewController::class, 'recordView']
 
 // Search
 Route::get('/search', [SearchController::class, 'getSearch']);
+
+// Page
+Route::get('/page/{id}', [PageController::class, 'getPage']);
