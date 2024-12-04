@@ -47,4 +47,4 @@ Route::post('/record-product-view', [ProductViewController::class, 'recordView']
 Route::get('/search', [SearchController::class, 'getSearch']);
 
 // Page
-Route::get('/page/{id}', [PageController::class, 'getPage']);
+// Route::get('/page/{id}', [PageController::class, 'getPage']);
