@@ -179,7 +179,7 @@ class EmojiController extends Controller
             ->get();
 
         // รวมผลลัพธ์
-        $emojis = $emojisBefore->merge($emojisAfter);
+        $emojis = $emojisBefore->concat($emojisAfter);
 
         // แปลงข้อมูล
         $emojiByAuthor = $emojis->map(function ($emoji) {

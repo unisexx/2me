@@ -183,7 +183,7 @@ class ThemeController extends Controller
             ->get();
 
         // รวมผลลัพธ์
-        $themes = $themesBefore->merge($themesAfter);
+        $themes = $themesBefore->concat($themesAfter);
 
         // Map ข้อมูลเพื่อตอบกลับ
         $themeByAuthor = $themes->map(function ($theme) {
