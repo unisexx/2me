@@ -47,6 +47,7 @@ class EmojiController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($emoji) {
                     $createdAt = Carbon::parse($emoji->created_at);
@@ -76,6 +77,7 @@ class EmojiController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($emoji) {
                     $createdAt = Carbon::parse($emoji->created_at);
@@ -105,6 +107,7 @@ class EmojiController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($emoji) {
                     $createdAt = Carbon::parse($emoji->created_at);
@@ -134,6 +137,7 @@ class EmojiController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($emoji) {
                     $createdAt = Carbon::parse($emoji->created_at);

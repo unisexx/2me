@@ -49,6 +49,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -80,6 +81,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -111,6 +113,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -142,6 +145,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
