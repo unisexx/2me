@@ -41,7 +41,7 @@ class EmojiController extends Controller
     public function getEmojiOfficialThai()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+        $emojiUpdate = Cache::remember('emoji_official_thai', 3600, function () {
             return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -71,7 +71,7 @@ class EmojiController extends Controller
     public function getEmojiOfficialOversea()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+        $emojiUpdate = Cache::remember('emoji_official_oversea', 3600, function () {
             return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -101,7 +101,7 @@ class EmojiController extends Controller
     public function getEmojiCreatorThai()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+        $emojiUpdate = Cache::remember('emoji_creator_thai', 3600, function () {
             return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)
@@ -131,7 +131,7 @@ class EmojiController extends Controller
     public function getEmojiCreatorOversea()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+        $emojiUpdate = Cache::remember('emoji_creator_oversea', 3600, function () {
             return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)

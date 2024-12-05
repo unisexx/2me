@@ -43,7 +43,7 @@ class ThemeController extends Controller
     public function getThemeOfficialThai()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+        $themeUpdate = Cache::remember('theme_official_thai', 3600, function () {
             return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -75,7 +75,7 @@ class ThemeController extends Controller
     public function getThemeOfficialOversea()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+        $themeUpdate = Cache::remember('theme_official_oversea', 3600, function () {
             return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -107,7 +107,7 @@ class ThemeController extends Controller
     public function getThemeCreatorThai()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+        $themeUpdate = Cache::remember('theme_creator_thai', 3600, function () {
             return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)
@@ -139,7 +139,7 @@ class ThemeController extends Controller
     public function getThemeCreatorOversea()
     {
         // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+        $themeUpdate = Cache::remember('theme_creator_oversea', 3600, function () {
             return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)
