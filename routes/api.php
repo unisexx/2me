@@ -29,12 +29,20 @@ Route::get('/sticker-by-author', [StickerController::class, 'getStickerByAuthor'
 
 // Theme
 Route::get('/theme-update', [ThemeController::class, 'getThemeUpdate']);
+Route::get('/theme-official-thai', [ThemeController::class, 'getThemeOfficialThai']);
+Route::get('/theme-official-oversea', [ThemeController::class, 'getThemeOfficialOversea']);
+Route::get('/theme-creator-thai', [ThemeController::class, 'getThemeCreatorThai']);
+Route::get('/theme-creator-oversea', [ThemeController::class, 'getThemeCreatorOversea']);
 Route::get('/theme-more', [ThemeController::class, 'getThemeMore']);
 Route::get('/theme-view/{id}', [ThemeController::class, 'getThemeView']);
 Route::get('/theme-by-author', [ThemeController::class, 'getThemeByAuthor']);
 
 // Emoji
 Route::get('/emoji-update', [EmojiController::class, 'getEmojiUpdate']);
+Route::get('/emoji-official-thai', [EmojiController::class, 'getEmojiOfficialThai']);
+Route::get('/emoji-official-oversea', [EmojiController::class, 'getEmojiOfficialOversea']);
+Route::get('/emoji-creator-thai', [EmojiController::class, 'getEmojiCreatorThai']);
+Route::get('/emoji-creator-oversea', [EmojiController::class, 'getEmojiCreatorOversea']);
 Route::get('/emoji-more', [EmojiController::class, 'getEmojiMore']);
 Route::get('/emoji-view/{id}', [EmojiController::class, 'getEmojiView']);
 Route::get('/emoji-by-author', [EmojiController::class, 'getEmojiByAuthor']);

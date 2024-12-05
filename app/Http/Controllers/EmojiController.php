@@ -38,6 +38,122 @@ class EmojiController extends Controller
         return response()->json($emojiUpdate);
     }
 
+    public function getEmojiOfficialThai()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+            return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($emoji) {
+                    $createdAt = Carbon::parse($emoji->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $emoji->id,
+                        'emoji_code' => $emoji->emoji_code,
+                        'title'      => $emoji->title,
+                        'country'    => $emoji->country,
+                        'price'      => convertLineCoin2Money($emoji->price),
+                        'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($emojiUpdate);
+    }
+
+    public function getEmojiOfficialOversea()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+            return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($emoji) {
+                    $createdAt = Carbon::parse($emoji->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $emoji->id,
+                        'emoji_code' => $emoji->emoji_code,
+                        'title'      => $emoji->title,
+                        'country'    => $emoji->country,
+                        'price'      => convertLineCoin2Money($emoji->price),
+                        'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($emojiUpdate);
+    }
+
+    public function getEmojiCreatorThai()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+            return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($emoji) {
+                    $createdAt = Carbon::parse($emoji->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $emoji->id,
+                        'emoji_code' => $emoji->emoji_code,
+                        'title'      => $emoji->title,
+                        'country'    => $emoji->country,
+                        'price'      => convertLineCoin2Money($emoji->price),
+                        'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($emojiUpdate);
+    }
+
+    public function getEmojiCreatorOversea()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $emojiUpdate = Cache::remember('emoji_update', 3600, function () {
+            return Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($emoji) {
+                    $createdAt = Carbon::parse($emoji->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $emoji->id,
+                        'emoji_code' => $emoji->emoji_code,
+                        'title'      => $emoji->title,
+                        'country'    => $emoji->country,
+                        'price'      => convertLineCoin2Money($emoji->price),
+                        'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($emojiUpdate);
+    }
+
     public function getEmojiMore(Request $request)
     {
         $perPage = 48;

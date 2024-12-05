@@ -39,6 +39,130 @@ class ThemeController extends Controller
         return response()->json($themeUpdate);
     }
 
+    // ธีมไลน์ทางการไทย
+    public function getThemeOfficialThai()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+            return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($theme) {
+                    $createdAt = Carbon::parse($theme->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $theme->id,
+                        'theme_code' => $theme->theme_code,
+                        'title'      => $theme->title,
+                        'country'    => $theme->country,
+                        'price'      => convertLineCoin2Money($theme->price),
+                        'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                        'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($themeUpdate);
+    }
+
+    // ธีมไลน์ทางการต่างประเทศ
+    public function getThemeOfficialOversea()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+            return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($theme) {
+                    $createdAt = Carbon::parse($theme->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $theme->id,
+                        'theme_code' => $theme->theme_code,
+                        'title'      => $theme->title,
+                        'country'    => $theme->country,
+                        'price'      => convertLineCoin2Money($theme->price),
+                        'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                        'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($themeUpdate);
+    }
+
+    // ธีมไลน์ครีเอเตอร์ไทย
+    public function getThemeCreatorThai()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+            return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($theme) {
+                    $createdAt = Carbon::parse($theme->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $theme->id,
+                        'theme_code' => $theme->theme_code,
+                        'title'      => $theme->title,
+                        'country'    => $theme->country,
+                        'price'      => convertLineCoin2Money($theme->price),
+                        'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                        'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($themeUpdate);
+    }
+
+    // ธีมไลน์ครีเอเตอร์ต่างประเทศ
+    public function getThemeCreatorOversea()
+    {
+        // ใช้ Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $themeUpdate = Cache::remember('theme_update', 3600, function () {
+            return Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->get()
+                ->map(function ($theme) {
+                    $createdAt = Carbon::parse($theme->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'id'         => $theme->id,
+                        'theme_code' => $theme->theme_code,
+                        'title'      => $theme->title,
+                        'country'    => $theme->country,
+                        'price'      => convertLineCoin2Money($theme->price),
+                        'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                        'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
+                        'is_new'     => $isNew,
+                    ];
+                });
+        });
+
+        return response()->json($themeUpdate);
+    }
+
     public function getThemeMore(Request $request)
     {
         $perPage = 48;
