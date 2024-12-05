@@ -19,6 +19,10 @@ Route::get('/promote-sticker', [PromoteController::class, 'getPromoteSticker']);
 
 // Sticker
 Route::get('/sticker-update', [StickerController::class, 'getStickerUpdate']);
+Route::get('/sticker-official-thai', [StickerController::class, 'getStickerOfficialThai']);
+Route::get('/sticker-official-oversea', [StickerController::class, 'getStickerOfficialOversea']);
+Route::get('/sticker-creator-thai', [StickerController::class, 'getStickerCreatorThai']);
+Route::get('/sticker-creator-oversea', [StickerController::class, 'getStickerCreatorOversea']);
 Route::get('/sticker-more', [StickerController::class, 'getStickerMore']);
 Route::get('/sticker-view/{sticker_code}', [StickerController::class, 'getStickerView']);
 Route::get('/sticker-by-author', [StickerController::class, 'getStickerByAuthor']);

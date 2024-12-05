@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Cache;
 
 class StickerController extends Controller
 {
+    // สติกเกอร์ไลน์อัพเดท
     public function getStickerUpdate()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
@@ -20,6 +21,130 @@ class StickerController extends Controller
                 ->where('created_at', '>', now()->subDays(7)->endOfDay())
                 ->orderByRaw("FIELD(country,'th','jp','tw','id') asc")
             // ->orderBy('sticker_code', 'desc')
+                ->get()
+                ->map(function ($sticker) {
+                    $createdAt = Carbon::parse($sticker->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'sticker_code' => $sticker->sticker_code,
+                        'title_th'     => $sticker->title_th,
+                        'country'      => $sticker->country,
+                        'price'        => convertLineCoin2Money($sticker->price),
+                        'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                        'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                        'is_new'       => $isNew, // เพิ่มตัวแปร is_new
+                    ];
+                });
+        });
+
+        return response()->json($stickerUpdate);
+    }
+
+    // สติกเกอร์ไลน์ทางการไทย
+    public function getStickerOfficialThai()
+    {
+        // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $stickerUpdate = Cache::remember('sticker_official_thai', 3600, function () {
+            return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
+                ->get()
+                ->map(function ($sticker) {
+                    $createdAt = Carbon::parse($sticker->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'sticker_code' => $sticker->sticker_code,
+                        'title_th'     => $sticker->title_th,
+                        'country'      => $sticker->country,
+                        'price'        => convertLineCoin2Money($sticker->price),
+                        'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                        'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                        'is_new'       => $isNew, // เพิ่มตัวแปร is_new
+                    ];
+                });
+        });
+
+        return response()->json($stickerUpdate);
+    }
+
+    // สติกเกอร์ไลน์ทางการต่างประเทศ
+    public function getStickerOfficialOversea()
+    {
+        // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $stickerUpdate = Cache::remember('sticker_official_oversea', 3600, function () {
+            return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+                ->where('category', 'official')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
+                ->get()
+                ->map(function ($sticker) {
+                    $createdAt = Carbon::parse($sticker->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'sticker_code' => $sticker->sticker_code,
+                        'title_th'     => $sticker->title_th,
+                        'country'      => $sticker->country,
+                        'price'        => convertLineCoin2Money($sticker->price),
+                        'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                        'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                        'is_new'       => $isNew, // เพิ่มตัวแปร is_new
+                    ];
+                });
+        });
+
+        return response()->json($stickerUpdate);
+    }
+
+    // สติกเกอร์ไลน์ครีเอเตอร์ไทย
+    public function getStickerCreatorThai()
+    {
+        // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $stickerUpdate = Cache::remember('sticker_creator_thai', 3600, function () {
+            return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->where('country', 'th')
+                ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
+                ->get()
+                ->map(function ($sticker) {
+                    $createdAt = Carbon::parse($sticker->created_at);
+                    $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+                    return [
+                        'sticker_code' => $sticker->sticker_code,
+                        'title_th'     => $sticker->title_th,
+                        'country'      => $sticker->country,
+                        'price'        => convertLineCoin2Money($sticker->price),
+                        'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
+                        'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                        'is_new'       => $isNew, // เพิ่มตัวแปร is_new
+                    ];
+                });
+        });
+
+        return response()->json($stickerUpdate);
+    }
+
+    // สติกเกอร์ไลน์ครีเอเตอร์ต่างประเทศ
+    public function getStickerCreatorOversea()
+    {
+        // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
+        $stickerUpdate = Cache::remember('sticker_creator_oversea', 3600, function () {
+            return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
+                ->where('category', 'creator')
+                ->where('status', 1)
+                ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
+                ->orderBy('views_last_3_days', 'desc')
+                ->take(16)
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
