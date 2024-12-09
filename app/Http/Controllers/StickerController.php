@@ -14,7 +14,7 @@ class StickerController extends Controller
     public function getStickerUpdate()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $stickerUpdate = Cache::remember('sticker_update', 3600, function () {
+        $stickerUpdate = Cache::remember('sticker_update', now()->addSeconds(3600), function () {
             // สติกเกอร์อัพเดทประจำสัปดาห์
             return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
                 ->where('category', 'official')
@@ -46,7 +46,7 @@ class StickerController extends Controller
     public function getStickerOfficialThai()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $stickerUpdate = Cache::remember('sticker_official_thai', 3600, function () {
+        $stickerUpdate = Cache::remember('sticker_official_thai', now()->addSeconds(3600), function () {
             return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -77,7 +77,7 @@ class StickerController extends Controller
     public function getStickerOfficialOversea()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $stickerUpdate = Cache::remember('sticker_official_oversea', 3600, function () {
+        $stickerUpdate = Cache::remember('sticker_official_oversea', now()->addSeconds(3600), function () {
             return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
                 ->where('category', 'official')
                 ->where('status', 1)
@@ -108,7 +108,7 @@ class StickerController extends Controller
     public function getStickerCreatorThai()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $stickerUpdate = Cache::remember('sticker_creator_thai', 3600, function () {
+        $stickerUpdate = Cache::remember('sticker_creator_thai', now()->addSeconds(3600), function () {
             return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)
@@ -139,7 +139,7 @@ class StickerController extends Controller
     public function getStickerCreatorOversea()
     {
         // ตั้งค่า Cache เป็นเวลา 3600 วินาที (1 ชั่วโมง)
-        $stickerUpdate = Cache::remember('sticker_creator_oversea', 3600, function () {
+        $stickerUpdate = Cache::remember('sticker_creator_oversea', now()->addSeconds(3600), function () {
             return Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
                 ->where('category', 'creator')
                 ->where('status', 1)
