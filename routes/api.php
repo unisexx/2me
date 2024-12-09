@@ -60,11 +60,11 @@ Route::post('/record-product-view', [ProductViewController::class, 'recordView']
 Route::get('/search', [SearchController::class, 'getSearch']);
 
 // Crawer
-Route::get('getsticker/{sticker_code}', [CrawlerController::class, 'getsticker']);
-Route::get('gettheme/{theme_code}', [CrawlerController::class, 'gettheme']);
-Route::get('getemoji/{emoji_code}', [CrawlerController::class, 'getemoji']);
+// Route::get('getsticker/{sticker_code}', [CrawlerController::class, 'getsticker']);
+// Route::get('gettheme/{theme_code}', [CrawlerController::class, 'gettheme']);
+// Route::get('getemoji/{emoji_code}', [CrawlerController::class, 'getemoji']);
 
-Route::get('/getstickerstore/{type}/{category}/{page}', [CrawlerController::class, 'getstickerstore']);
+// Route::get('/getstickerstore/{type}/{category}/{page}', [CrawlerController::class, 'getstickerstore']);
 
 // Page
 // Route::get('/page/{id}', [PageController::class, 'getPage']);
