@@ -6,6 +6,7 @@ use App\Models\Emoji;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class EmojiController extends Controller
 {
@@ -278,29 +279,41 @@ class EmojiController extends Controller
     // อิโมจิอื่นๆค้นหาตามชื่อผู้สร้าง
     public function getEmojiByAuthor(Request $request)
     {
-        // คิวรี่สำหรับอัปเดตธีม
-        $emojiByAuthor = Emoji::select('id', 'emoji_code', 'title', 'country', 'price', 'created_at')
-            ->where('creator_name', $request->creator_name)
-            ->where('id', '!=', $request->id)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->inRandomOrder()
-            ->take(8)
-            ->get()
-            ->map(function ($emoji) {
-                $createdAt = Carbon::parse($emoji->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+        // ใช้ Raw SQL สำหรับ Subquery
+        $emojiByAuthor = DB::select("
+        SELECT *
+        FROM (
+            SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
+            FROM `emojis`
+            WHERE `creator_name` = ?
+              AND `id` != ?
+              AND `country` = ?
+              AND `status` = 1
+            LIMIT 1000
+        ) AS subquery
+        ORDER BY RAND()
+        LIMIT 8
+    ", [
+            $request->creator_name,
+            $request->id,
+            $request->country,
+        ]);
 
-                return [
-                    'id'         => $emoji->id,
-                    'emoji_code' => $emoji->emoji_code,
-                    'title'      => $emoji->title,
-                    'country'    => $emoji->country,
-                    'price'      => convertLineCoin2Money($emoji->price),
-                    'created_at' => $emoji->created_at->format('Y-m-d H:i:s'),
-                    'is_new'     => $isNew,
-                ];
-            });
+        // แปลงข้อมูล
+        $emojiByAuthor = collect($emojiByAuthor)->map(function ($emoji) {
+            $createdAt = Carbon::parse($emoji->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+            return [
+                'id'         => $emoji->id,
+                'emoji_code' => $emoji->emoji_code,
+                'title'      => $emoji->title,
+                'country'    => $emoji->country,
+                'price'      => convertLineCoin2Money($emoji->price),
+                'created_at' => $createdAt->format('Y-m-d H:i:s'),
+                'is_new'     => $isNew,
+            ];
+        });
 
         return response()->json($emojiByAuthor);
     }

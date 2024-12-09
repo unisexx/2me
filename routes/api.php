@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CrawlerController;
 use App\Http\Controllers\EmojiController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductViewController;
@@ -57,6 +58,13 @@ Route::post('/record-product-view', [ProductViewController::class, 'recordView']
 
 // Search
 Route::get('/search', [SearchController::class, 'getSearch']);
+
+// Crawer
+Route::get('getsticker/{sticker_code}', [CrawlerController::class, 'getsticker']);
+Route::get('gettheme/{theme_code}', [CrawlerController::class, 'gettheme']);
+Route::get('getemoji/{emoji_code}', [CrawlerController::class, 'getemoji']);
+
+Route::get('/getstickerstore/{type}/{category}/{page}', [CrawlerController::class, 'getstickerstore']);
 
 // Page
 // Route::get('/page/{id}', [PageController::class, 'getPage']);

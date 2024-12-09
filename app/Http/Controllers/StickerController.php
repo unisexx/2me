@@ -6,6 +6,7 @@ use App\Models\Sticker;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class StickerController extends Controller
 {
@@ -290,45 +291,28 @@ class StickerController extends Controller
     // สติกเกอร์อื่นๆค้นหาตามชื่อผู้สร้าง
     public function getStickerByAuthor(Request $request)
     {
-        // คิวรี่สำหรับอัปเดตสติกเกอร์
-        $stickerAuthor = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-            ->where('author_th', $request->author_th)
-            ->where('sticker_code', '!=', $request->sticker_code)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->inRandomOrder()
-            ->take(8)
-            ->get();
-
-        // Debug ผลลัพธ์
-        // if ($stickerAuthor->isEmpty()) {
-        //     dd("No data found in stickerAuthor query");
-        // }
-
-        // รายการที่ sticker_code มากกว่า $request->sticker_code
-        // $stickerOther = Sticker::select('sticker_code', 'title_th', 'country', 'price', 'stickerresourcetype', 'version', 'created_at')
-        //     ->where('sticker_code', '>', $request->sticker_code)
-        //     ->where('category', $request->category)
-        //     ->where('country', $request->country)
-        //     ->where('status', 1)
-        //     ->take(5)
-        //     ->get();
-
-        // Debug ผลลัพธ์
-        // if ($stickerOther->isEmpty()) {
-        //     dd("No data found in stickerOther query");
-        // }
-
-        // รวมผลลัพธ์ทั้งสองเข้าด้วยกัน
-        // $mergedStickers = $stickerAuthor->concat($stickerOther);
-
-        // Debug ผลลัพธ์รวม
-        // if ($mergedStickers->isEmpty()) {
-        //     dd("No data found in merged stickers");
-        // }
+        // ใช้ Raw SQL สำหรับ Subquery
+        $stickerAuthor = DB::select("
+        SELECT *
+        FROM (
+            SELECT `sticker_code`, `title_th`, `country`, `price`, `stickerresourcetype`, `version`, `created_at`
+            FROM `stickers`
+            WHERE `author_th` = ?
+              AND `sticker_code` != ?
+              AND `country` = ?
+              AND `status` = 1
+            LIMIT 1000
+        ) AS subquery
+        ORDER BY RAND()
+        LIMIT 8
+    ", [
+            $request->author_th,
+            $request->sticker_code,
+            $request->country,
+        ]);
 
         // แปลงข้อมูล
-        $stickerAuthor = $stickerAuthor->map(function ($sticker) {
+        $stickerAuthor = collect($stickerAuthor)->map(function ($sticker) {
             $createdAt = Carbon::parse($sticker->created_at);
             $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
@@ -338,7 +322,7 @@ class StickerController extends Controller
                 'country'      => $sticker->country,
                 'price'        => convertLineCoin2Money($sticker->price),
                 'img_url'      => getStickerImgUrl($sticker->stickerresourcetype, $sticker->version, $sticker->sticker_code),
-                'created_at'   => $sticker->created_at->format('Y-m-d H:i:s'),
+                'created_at'   => $createdAt->format('Y-m-d H:i:s'),
                 'is_new'       => $isNew,
             ];
         });

@@ -6,6 +6,7 @@ use App\Models\Theme;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ThemeController extends Controller
 {
@@ -290,31 +291,43 @@ class ThemeController extends Controller
     // ธีมอื่นๆค้นหาตามชื่อผู้สร้าง
     public function getThemeByAuthor(Request $request)
     {
-        // คิวรี่สำหรับอัปเดตธีม
-        $themeByAuthor = Theme::select('id', 'theme_code', 'title', 'country', 'price', 'section', 'created_at')
-            ->where('author', $request->author)
-            ->where('id', '!=', $request->id)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->inRandomOrder()
-            ->take(8)
-            ->get()
-            ->map(function ($theme) {
-                $createdAt = Carbon::parse($theme->created_at);
-                $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+        // ใช้ Raw SQL สำหรับ Subquery
+        $themeByAuthor = DB::select("
+        SELECT *
+        FROM (
+            SELECT `id`, `theme_code`, `title`, `country`, `price`, `section`, `created_at`
+            FROM `themes`
+            WHERE `author` = ?
+              AND `id` != ?
+              AND `country` = ?
+              AND `status` = 1
+            LIMIT 1000
+        ) AS subquery
+        ORDER BY RAND()
+        LIMIT 8
+    ", [
+            $request->author,
+            $request->id,
+            $request->country,
+        ]);
 
-                return [
-                    'id'         => $theme->id,
-                    'theme_code' => $theme->theme_code,
-                    'title'      => $theme->title,
-                    'country'    => $theme->country,
-                    'detail'     => $theme->detail,
-                    'price'      => convertLineCoin2Money($theme->price),
-                    'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
-                    'created_at' => $theme->created_at->format('Y-m-d H:i:s'),
-                    'is_new'     => $isNew,
-                ];
-            });
+        // แปลงข้อมูล
+        $themeByAuthor = collect($themeByAuthor)->map(function ($theme) {
+            $createdAt = Carbon::parse($theme->created_at);
+            $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
+
+            return [
+                'id'         => $theme->id,
+                'theme_code' => $theme->theme_code,
+                'title'      => $theme->title,
+                'country'    => $theme->country,
+                'detail'     => $theme->detail ?? null,
+                'price'      => convertLineCoin2Money($theme->price),
+                'img_url'    => generateThemeUrl($theme->theme_code, $theme->section, $theme->theme_code),
+                'created_at' => $createdAt->format('Y-m-d H:i:s'),
+                'is_new'     => $isNew,
+            ];
+        });
 
         return response()->json($themeByAuthor);
     }
