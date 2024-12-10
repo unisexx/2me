@@ -58,28 +58,36 @@ if (!function_exists('generateThemeUrlDetail')) {
 if (!function_exists('recordProductView')) {
     function recordProductView($type, $id, $clientIp = null)
     {
-        // ตรวจสอบ User-Agent ว่าเป็น Bot หรือไม่
         $userAgent = request()->header('User-Agent');
         if (isBot($userAgent)) {
             return; // ถ้าเป็น Bot ให้หยุดทำงาน
         }
 
-        // ใช้ IP ที่รับจาก API หากมี ไม่เช่นนั้นใช้ IP จากคำขอปัจจุบัน
         $ipAddress = $clientIp ?? (request()->header('X-Forwarded-For')
                 ? explode(',', request()->header('X-Forwarded-For'))[0]
                 : request()->ip());
 
         $today = Carbon::today();
 
-        // ใช้ insertOrIgnore เพื่อบันทึกข้อมูลโดยป้องกันการบันทึกซ้ำ
-        DB::table('product_views')->insertOrIgnore([
-            'product_id' => $id,
-            'type'       => $type,
-            'ip_address' => $ipAddress,
-            'view_date'  => $today,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // ตรวจสอบว่ามีการบันทึกข้อมูลสำหรับ IP นี้ในวันนี้หรือยัง
+        $exists = DB::table('product_views')
+            ->where('product_id', $id)
+            ->where('type', $type)
+            ->where('ip_address', $ipAddress)
+            ->whereDate('created_at', '=', $today) // ตรวจสอบวันที่
+            ->exists();
+
+        if (!$exists) {
+            // ถ้ายังไม่มีข้อมูลซ้ำในวันนี้ ให้บันทึกใหม่
+            DB::table('product_views')->insert([
+                'product_id' => $id,
+                'type'       => $type,
+                'ip_address' => $ipAddress,
+                'view_date'  => $today,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
 
         // นับยอดวิวในช่วง 3 วันล่าสุด
         $threeDaysAgo = Carbon::now()->subDays(3);
