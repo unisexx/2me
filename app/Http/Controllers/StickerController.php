@@ -183,7 +183,7 @@ class StickerController extends Controller
         // กรองตาม category
         if (!empty($category)) {
             if ($category === 'official') {
-                $query->where('category', '==', 'official');
+                $query->where('category', '=', 'official');
             } else {
                 $query->where('category', '!=', 'official');
             }
