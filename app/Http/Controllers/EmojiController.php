@@ -283,42 +283,28 @@ class EmojiController extends Controller
     // อิโมจิอื่นๆค้นหาตามชื่อผู้สร้าง
     public function getEmojiByAuthor(Request $request)
     {
-        // ดึงค่าขอบเขตของ id (min และ max)
-        $minId = DB::table('emojis')
-            ->where('creator_name', $request->creator_name)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->min('id');
-
-        $maxId = DB::table('emojis')
-            ->where('creator_name', $request->creator_name)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->max('id');
-
-        // ตรวจสอบว่า minId และ maxId มีค่า
-        if (is_null($minId) || is_null($maxId)) {
-            return response()->json([]); // หากไม่มีข้อมูลในช่วง ให้คืนค่าเป็น empty array
-        }
-
-        // สุ่ม ID
-        $randomIds = [];
-        for ($i = 0; $i < 8; $i++) {
-            $randomIds[] = random_int($minId, $maxId);
-        }
-
-        // ดึงข้อมูลจาก ID ที่สุ่มได้
-        $emojiByAuthor = DB::table('emojis')
-            ->select('id', 'emoji_code', 'title', 'country', 'price')
-            ->where('creator_name', $request->creator_name)
-            ->where('id', '!=', $request->id)
-            ->where('country', $request->country)
-            ->where('status', 1)
-            ->whereIn('id', $randomIds) // กรองด้วย ID ที่สุ่มได้
-            ->get();
+        // ใช้ Raw SQL สำหรับ Subquery
+        $emojiByAuthor = DB::select("
+        SELECT *
+        FROM (
+            SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
+            FROM `emojis`
+            WHERE `creator_name` = ?
+              AND `id` != ?
+              AND `country` = ?
+              AND `status` = 1
+            LIMIT 1000
+        ) AS subquery
+        ORDER BY RAND()
+        LIMIT 8
+    ", [
+            $request->creator_name,
+            $request->id,
+            $request->country,
+        ]);
 
         // แปลงข้อมูล
-        $emojiByAuthor = $emojiByAuthor->map(function ($emoji) {
+        $emojiByAuthor = collect($emojiByAuthor)->map(function ($emoji) {
             $createdAt = Carbon::parse($emoji->created_at);
             $isNew     = $createdAt->diffInDays(Carbon::now()) < 7;
 
@@ -328,6 +314,7 @@ class EmojiController extends Controller
                 'title'      => $emoji->title,
                 'country'    => $emoji->country,
                 'price'      => convertLineCoin2Money($emoji->price),
+                'created_at' => $createdAt->format('Y-m-d H:i:s'),
                 'is_new'     => $isNew,
             ];
         });
