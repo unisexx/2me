@@ -299,15 +299,19 @@ class StickerController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $stickerAuthor = DB::select("
+        SELECT *
+        FROM (
             SELECT `sticker_code`, `title_th`, `country`, `price`, `stickerresourcetype`, `version`, `created_at`
             FROM `stickers`
             WHERE `author_th` = ?
-            AND `sticker_code` < ?
-            AND `country` = ?
-            AND `status` = 1
-            ORDER BY `sticker_code`
-            LIMIT 8
-        ", [
+              AND `sticker_code` != ?
+              AND `country` = ?
+              AND `status` = 1
+            LIMIT 300
+        ) AS subquery
+        ORDER BY RAND()
+        LIMIT 8
+    ", [
             $request->author_th,
             $request->sticker_code,
             $request->country,
