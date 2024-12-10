@@ -173,7 +173,11 @@ class EmojiController extends Controller
 
         // กรองตาม category
         if (!empty($category)) {
-            $query->where('category', $category);
+            if ($category === 'official') {
+                $query->where('category', 'official');
+            } else {
+                $query->where('category', '!=', 'official');
+            }
         }
 
         // กรองตาม country
