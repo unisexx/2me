@@ -74,7 +74,7 @@ if (!function_exists('recordProductView')) {
             ->where('product_id', $id)
             ->where('type', $type)
             ->where('ip_address', $ipAddress)
-            ->whereDate('created_at', '=', $today) // ตรวจสอบวันที่
+            ->whereDate('view_date', '=', $today)
             ->exists();
 
         if (!$exists) {
