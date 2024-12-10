@@ -192,9 +192,9 @@ class StickerController extends Controller
         // กรองตาม country
         if (!empty($country)) {
             if ($country === 'oversea') {
-                $query->where('country', '!=', 'th'); // กรอง country ที่ไม่ใช่ 'th'
+                $query->where('country', '!=', 'th');
             } else {
-                $query->where('country', $country); // กรองตาม country ที่ระบุ
+                $query->where('country', $country);
             }
         }
 
