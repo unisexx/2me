@@ -285,19 +285,18 @@ class EmojiController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $emojiByAuthor = DB::select("
-        SELECT *
-        FROM (
             SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
             FROM `emojis`
             WHERE `creator_name` = ?
-              AND `id` != ?
-              AND `country` = ?
-              AND `status` = 1
-            LIMIT 1000
-        ) AS subquery
-        ORDER BY RAND()
-        LIMIT 8
-    ", [
+            AND `id` != ?
+            AND `country` = ?
+            AND `status` = 1
+            AND `id` >= (
+                SELECT FLOOR(RAND() * (SELECT MAX(`id`) FROM `emojis`))
+            )
+            ORDER BY `id`
+            LIMIT 8
+        ", [
             $request->creator_name,
             $request->id,
             $request->country,

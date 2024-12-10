@@ -297,19 +297,18 @@ class ThemeController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $themeByAuthor = DB::select("
-        SELECT *
-        FROM (
             SELECT `id`, `theme_code`, `title`, `country`, `price`, `section`, `created_at`
             FROM `themes`
             WHERE `author` = ?
-              AND `id` != ?
-              AND `country` = ?
-              AND `status` = 1
-            LIMIT 1000
-        ) AS subquery
-        ORDER BY RAND()
-        LIMIT 8
-    ", [
+            AND `id` != ?
+            AND `country` = ?
+            AND `status` = 1
+            AND `id` >= (
+                SELECT FLOOR(RAND() * (SELECT MAX(`id`) FROM `themes`))
+            )
+            ORDER BY `id`
+            LIMIT 8
+        ", [
             $request->author,
             $request->id,
             $request->country,
