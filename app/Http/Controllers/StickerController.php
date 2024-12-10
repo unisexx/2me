@@ -302,12 +302,9 @@ class StickerController extends Controller
             SELECT `sticker_code`, `title_th`, `country`, `price`, `stickerresourcetype`, `version`, `created_at`
             FROM `stickers`
             WHERE `author_th` = ?
-            AND `sticker_code` != ?
+            AND `sticker_code` < ?
             AND `country` = ?
             AND `status` = 1
-            AND `sticker_code` >= (
-                SELECT FLOOR(RAND() * (SELECT MAX(`sticker_code`) FROM `stickers`))
-            )
             ORDER BY `sticker_code`
             LIMIT 8
         ", [

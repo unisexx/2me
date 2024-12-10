@@ -300,12 +300,9 @@ class ThemeController extends Controller
             SELECT `id`, `theme_code`, `title`, `country`, `price`, `section`, `created_at`
             FROM `themes`
             WHERE `author` = ?
-            AND `id` != ?
+            AND `id` < ?
             AND `country` = ?
             AND `status` = 1
-            AND `id` >= (
-                SELECT FLOOR(RAND() * (SELECT MAX(`id`) FROM `themes`))
-            )
             ORDER BY `id`
             LIMIT 8
         ", [

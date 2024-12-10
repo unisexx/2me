@@ -288,12 +288,9 @@ class EmojiController extends Controller
             SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
             FROM `emojis`
             WHERE `creator_name` = ?
-            AND `id` != ?
+            AND `id` < ?
             AND `country` = ?
             AND `status` = 1
-            AND `id` >= (
-                SELECT FLOOR(RAND() * (SELECT MAX(`id`) FROM `emojis`))
-            )
             ORDER BY `id`
             LIMIT 8
         ", [
