@@ -185,7 +185,7 @@ class StickerController extends Controller
             if ($category === 'official') {
                 $query->where('category', 'official');
             } else {
-                $query->where('category', '!=', 'official');
+                $query->where('category', 'creator');
             }
         } else {
             $query->where('category', 'official');
