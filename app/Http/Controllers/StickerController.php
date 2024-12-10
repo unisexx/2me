@@ -205,6 +205,8 @@ class StickerController extends Controller
             $query->orderBy('id', 'desc'); // ค่าเริ่มต้นคือ new
         }
 
+        // dd($query->toSql(), $query->getBindings());
+
         // ใช้ simplePaginate สำหรับ Infinity Scroll
         $stickers = $query->simplePaginate($perPage);
 
