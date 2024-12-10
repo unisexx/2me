@@ -187,6 +187,8 @@ class StickerController extends Controller
             } else {
                 $query->where('category', '!=', 'official');
             }
+        } else {
+            $query->where('category', 'official');
         }
 
         // กรองตาม country
@@ -196,6 +198,8 @@ class StickerController extends Controller
             } else {
                 $query->where('country', $country);
             }
+        } else {
+            $query->where('country', 'th');
         }
 
         // จัดเรียงข้อมูล
@@ -299,19 +303,19 @@ class StickerController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $stickerAuthor = DB::select("
-        SELECT *
-        FROM (
-            SELECT `sticker_code`, `title_th`, `country`, `price`, `stickerresourcetype`, `version`, `created_at`
-            FROM `stickers`
-            WHERE `author_th` = ?
-              AND `sticker_code` != ?
-              AND `country` = ?
-              AND `status` = 1
-            LIMIT 300
-        ) AS subquery
-        ORDER BY RAND()
-        LIMIT 8
-    ", [
+            SELECT *
+            FROM (
+                SELECT `sticker_code`, `title_th`, `country`, `price`, `stickerresourcetype`, `version`, `created_at`
+                FROM `stickers`
+                WHERE `author_th` = ?
+                AND `sticker_code` != ?
+                AND `country` = ?
+                AND `status` = 1
+                LIMIT 300
+            ) AS subquery
+            ORDER BY RAND()
+            LIMIT 8
+        ", [
             $request->author_th,
             $request->sticker_code,
             $request->country,

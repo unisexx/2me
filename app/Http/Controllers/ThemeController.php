@@ -187,6 +187,8 @@ class ThemeController extends Controller
             } else {
                 $query->where('category', '!=', 'official');
             }
+        } else {
+            $query->where('category', 'official');
         }
 
         // กรองตาม country
@@ -196,6 +198,8 @@ class ThemeController extends Controller
             } else {
                 $query->where('country', $country); // กรองตาม country ที่ระบุ
             }
+        } else {
+            $query->where('country', 'th');
         }
 
         // จัดเรียงข้อมูล
@@ -297,19 +301,19 @@ class ThemeController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $themeByAuthor = DB::select("
-        SELECT *
-        FROM (
-            SELECT `id`, `theme_code`, `title`, `country`, `price`, `section`, `created_at`
-            FROM `themes`
-            WHERE `author` = ?
-              AND `id` != ?
-              AND `country` = ?
-              AND `status` = 1
-            LIMIT 300
-        ) AS subquery
-        ORDER BY RAND()
-        LIMIT 8
-    ", [
+            SELECT *
+            FROM (
+                SELECT `id`, `theme_code`, `title`, `country`, `price`, `section`, `created_at`
+                FROM `themes`
+                WHERE `author` = ?
+                AND `id` != ?
+                AND `country` = ?
+                AND `status` = 1
+                LIMIT 300
+            ) AS subquery
+            ORDER BY RAND()
+            LIMIT 8
+        ", [
             $request->author,
             $request->id,
             $request->country,

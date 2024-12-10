@@ -178,6 +178,8 @@ class EmojiController extends Controller
             } else {
                 $query->where('category', '!=', 'official');
             }
+        } else {
+            $query->where('category', 'official');
         }
 
         // กรองตาม country
@@ -187,6 +189,8 @@ class EmojiController extends Controller
             } else {
                 $query->where('country', $country); // กรองตาม country ที่ระบุ
             }
+        } else {
+            $query->where('country', 'th');
         }
 
         // จัดเรียงข้อมูล
@@ -285,19 +289,19 @@ class EmojiController extends Controller
     {
         // ใช้ Raw SQL สำหรับ Subquery
         $emojiByAuthor = DB::select("
-        SELECT *
-        FROM (
-            SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
-            FROM `emojis`
-            WHERE `creator_name` = ?
-              AND `id` != ?
-              AND `country` = ?
-              AND `status` = 1
-            LIMIT 300
-        ) AS subquery
-        ORDER BY RAND()
-        LIMIT 8
-    ", [
+            SELECT *
+            FROM (
+                SELECT `id`, `emoji_code`, `title`, `country`, `price`, `created_at`
+                FROM `emojis`
+                WHERE `creator_name` = ?
+                AND `id` != ?
+                AND `country` = ?
+                AND `status` = 1
+                LIMIT 300
+            ) AS subquery
+            ORDER BY RAND()
+            LIMIT 8
+        ", [
             $request->creator_name,
             $request->id,
             $request->country,
