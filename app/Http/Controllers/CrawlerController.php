@@ -237,11 +237,10 @@ class CrawlerController extends Controller
 
     /**
      * ดึงสติ๊กเกอร์ไลน์จากเว็บ store.line
-     * Type: 1 = official, 2 = creator
      * cat : top, new, top_creators, new_top_creators, new_creators
      * Page: หน้าที่จะเข้าไปดึงข้อมูล
      */
-    public function getstickerstore($type, $cat, $page = null)
+    public function getstickerstore($cat, $page = null)
     {
         $client     = new Client();
         $pageTarget = 'https://store.line.me/stickershop/showcase/' . $cat . '/th?page=' . $page;
