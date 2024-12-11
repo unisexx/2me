@@ -7,21 +7,30 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected $commands = [
+        \App\Console\Commands\RunCrawlerTopCreator::class,
+    ];
+
     /**
      * Define the application's command schedule.
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->call(function () {
-            \Log::info('Scheduler Test: Task is running.');
-        })->everyMinute();
+        // $schedule->call(function () {
+        //     \Log::info('Scheduler Test: Task is running.');
+        // })->everyMinute();
 
         // Add the scheduled command
         $schedule->command('product-views:delete-old')
-            ->everyMinute()
-        // ->dailyAt('00:00')
-        // ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log'))
+            ->dailyAt('00:00')
+            ->appendOutputTo(storage_path('logs/DeleteOldProductViews.log'))
             ->runInBackground();
+
+        $schedule->command('crawler:RunCrawlerTopCreator')
+            ->everyMinute()
+            ->appendOutputTo(storage_path('logs/RunCrawlerTopCreator.log'))
+            ->runInBackground();
+
     }
 
     /**
