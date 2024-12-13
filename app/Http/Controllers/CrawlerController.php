@@ -315,15 +315,14 @@ class CrawlerController extends Controller
 
     /**
      * ดึงอิโมจิจากเว็บ store.line
-     * Type: 1 = official, 2 = creator
-     * Cat : top, new, top_creators, new_top_creators, new_creators
+     * category: official, creator
+     * type : top, new, top_creators, new_creators
      * Page: หน้าที่จะเข้าไปดึงข้อมูล
      */
-    public function getemojistore($type, $cat, $page = null)
+    public function getemojistore($category, $type, $page = null)
     {
         $client     = new Client();
-        $pageTarget = 'https://store.line.me/emojishop/showcase/' . $cat . '/th?page=' . $page;
-        $category   = $type == 1 ? 'official' : 'creator';
+        $pageTarget = 'https://store.line.me/emojishop/showcase/' . $type . '/th?page=' . $page;
 
         // ส่ง HTTP Request
         $response = $client->request('GET', $pageTarget);
@@ -348,7 +347,7 @@ class CrawlerController extends Controller
         // ดำเนินการเสร็จทั้งหมดแล้ว ให้ redirect ถ้า $page ยังไม่ถึงหน้าแรก
         if (isset($page) && $page != 1) {
             $page          = $page - 1;
-            $page_redirect = url('admin/getemojistore/' . $type . '/' . $cat . '/' . $page);
+            $page_redirect = url('admin/getemojistore/' . $category . '/' . $type . '/' . $page);
             echo "<script>setTimeout(function(){ window.location.href = '" . $page_redirect . "'; }, 1000);</script>";
         }
     }

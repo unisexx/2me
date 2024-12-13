@@ -66,6 +66,7 @@ Route::get('/search', [SearchController::class, 'getSearch']);
 
 Route::get('/getstickerstore/{category}/{page}', [CrawlerController::class, 'getstickerstore']);
 Route::get('/getthemestore/{category}/{type}/{page}', [CrawlerController::class, 'getthemestore']);
+Route::get('/getemojistore/{category}/{type}/{page}', [CrawlerController::class, 'getemojistore']);
 
 // Page
 // Route::get('/page/{id}', [PageController::class, 'getPage']);
