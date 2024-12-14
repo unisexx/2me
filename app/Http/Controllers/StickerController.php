@@ -52,7 +52,7 @@ class StickerController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
@@ -83,7 +83,7 @@ class StickerController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
@@ -114,7 +114,7 @@ class StickerController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
@@ -145,7 +145,7 @@ class StickerController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($sticker) {
                     $createdAt = Carbon::parse($sticker->created_at);
@@ -169,7 +169,7 @@ class StickerController extends Controller
     // หน้าลิสต์สติกเกอร์
     public function getStickerMore(Request $request)
     {
-        $perPage = 48;
+        $perPage = 24;
 
         // รับพารามิเตอร์จาก request
         $category = $request->input('category');
@@ -314,7 +314,7 @@ class StickerController extends Controller
                 LIMIT 300
             ) AS subquery
             ORDER BY RAND()
-            LIMIT 8
+            LIMIT 6
         ", [
             $request->author_th,
             $request->sticker_code,

@@ -50,7 +50,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -82,7 +82,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -114,7 +114,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->where('country', 'th')
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -146,7 +146,7 @@ class ThemeController extends Controller
                 ->where('status', 1)
                 ->whereIn('country', ['jp', 'id', 'us', 'kr', 'es', 'in', 'tw', 'cn', 'br', 'my', 'ph', 'mx', 'hk'])
                 ->orderBy('views_last_3_days', 'desc')
-                ->take(16)
+                ->take(6)
                 ->get()
                 ->map(function ($theme) {
                     $createdAt = Carbon::parse($theme->created_at);
@@ -170,7 +170,7 @@ class ThemeController extends Controller
 
     public function getThemeMore(Request $request)
     {
-        $perPage = 48;
+        $perPage = 24;
 
         // รับพารามิเตอร์จาก request
         $category = $request->input('category');
@@ -312,7 +312,7 @@ class ThemeController extends Controller
                 LIMIT 300
             ) AS subquery
             ORDER BY RAND()
-            LIMIT 8
+            LIMIT 6
         ", [
             $request->author,
             $request->id,
