@@ -54,7 +54,7 @@ Route::get('/theme-seo/{id}', [ThemeController::class, 'getThemeSEO']);
 Route::get('/emoji-seo/{id}', [EmojiController::class, 'getEmojiSEO']);
 
 // ProductView Log
-Route::post('/record-product-view', [ProductViewController::class, 'recordView']);
+Route::get('/record-product-view', [ProductViewController::class, 'recordView']);
 
 // Search
 Route::get('/search', [SearchController::class, 'getSearch']);
